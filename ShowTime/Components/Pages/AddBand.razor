@@ -1,30 +1,57 @@
-﻿@page "/addband"
+﻿@page "/addband"  
+@rendermode InteractiveServer  
 
-@rendermode InteractiveServer
+<h1>You can add bands here</h1>  
 
-<h1>You can add bands here</h1>
+<Fields>  
+	<Field>  
+		<input type="text" placeholder="Band name" @bind="band.Name" />  
+	</Field>  
+	<Field>  
+		<Select TValue="ShowTime.Enums.Genre" @bind-SelectedValue="@band.Genre">  
+			@foreach (Genre genre in Enum.GetValues(typeof(Genre)))  
+			{  
+				<SelectItem Value="@genre">@genre</SelectItem>  
+			}  
+		</Select>  
+	</Field>  
 
-<Fields>
-	<Field>
-		<input type="text" placeholder="Band name" />
-	</Field>
-	<Field>
-		<Select TValue="ShowTime.Enums.Genre" @bind-SelectedValue="@band.Genre">
-			@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
-			{
-				<SelectItem Value="@genre">@genre</SelectItem>
-			}
-		</Select>
-	</Field>
-
-	<Button Type="ButtonType.Submit" onsubmit="submit">Submit</Button>
-</Fields>
+	<Button Type="ButtonType.Submit" @onclick="Submit">Submit</Button>  
+</Fields>  
 
 @code {
-	Band band = new Band();
+	[Inject]  
+	private IRepositoryBand RepositoryBand { get; set; }  
 
-	void submit()
+	public Band band { get; set; } = new Band()
 	{
-		
-	}
+		Name = string.Empty,
+		Genre = 0,
+	};
+
+	private async Task Submit()  
+	{  
+		if(String.IsNullOrWhiteSpace(band.Name))
+		{
+			return;
+		}
+
+		try
+		{
+			await RepositoryBand.AddAsync(band);
+			await RepositoryBand.SaveChangeAsync();
+
+			band = new Band() { Name = "", Genre = 0 };
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error adding band: {ex.Message}");
+		}
+
+		// Redirect to the band list page  
+		NavigationManager.NavigateTo("/bands");  
+	}  
+
+	[Inject]  
+	private NavigationManager NavigationManager { get; set; }  
 }
