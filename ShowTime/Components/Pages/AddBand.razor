@@ -1,0 +1,30 @@
+﻿@page "/addband"
+
+@rendermode InteractiveServer
+
+<h1>You can add bands here</h1>
+
+<Fields>
+	<Field>
+		<input type="text" placeholder="Band name" />
+	</Field>
+	<Field>
+		<Select TValue="ShowTime.Enums.Genre" @bind-SelectedValue="@band.Genre">
+			@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
+			{
+				<SelectItem Value="@genre">@genre</SelectItem>
+			}
+		</Select>
+	</Field>
+
+	<Button Type="ButtonType.Submit" onsubmit="submit">Submit</Button>
+</Fields>
+
+@code {
+	Band band = new Band();
+
+	void submit()
+	{
+		
+	}
+}

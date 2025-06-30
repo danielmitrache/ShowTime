@@ -1,6 +1,6 @@
 ﻿namespace ShowTime.Repositories.Interfaces
 {
-    public interface IRepositoryBooking
+    public interface IRepositoryBooking : IRepositoryBase<ShowTime.Entities.Booking>
     {
     }
 }

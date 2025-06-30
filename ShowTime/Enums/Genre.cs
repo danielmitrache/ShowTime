@@ -4,6 +4,7 @@
     {
         Jazz,
         Pop,
-        Rock
+        Rock,
+        Shoegaze
     }
 }

@@ -1,0 +1,26 @@
+﻿@page "/bands"
+@using ShowTime.Repositories.Interfaces
+@rendermode InteractiveServer
+
+<h1>Bands Page</h1>
+
+<DataGrid TItem="ShowTime.Entities.Band" Data="@bands" Responsive Editable Filterable>
+    <DataGridColumns>
+        <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Name)" Caption="Nume" />
+        <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Genre)" Caption="Gen" />
+    </DataGridColumns>
+</DataGrid>
+
+@code {
+
+    private List<ShowTime.Entities.Band> bands;
+
+    [Inject]
+    private IRepositoryBand repositoryBand { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        bands = (await repositoryBand.GetAllAsync()).ToList();
+        StateHasChanged();
+    }
+}
