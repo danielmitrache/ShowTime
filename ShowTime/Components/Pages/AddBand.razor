@@ -1,23 +1,30 @@
 ﻿@page "/addband"  
-@rendermode InteractiveServer  
+@rendermode InteractiveServer 
 
-<h1>You can add bands here</h1>  
 
-<Fields>  
-	<Field>  
-		<input type="text" placeholder="Band name" @bind="band.Name" />  
-	</Field>  
-	<Field>  
-		<Select TValue="ShowTime.Enums.Genre" @bind-SelectedValue="@band.Genre">  
-			@foreach (Genre genre in Enum.GetValues(typeof(Genre)))  
-			{  
-				<SelectItem Value="@genre">@genre</SelectItem>  
-			}  
-		</Select>  
-	</Field>  
+<Heading Size="HeadingSize.Is2" TextColor="TextColor.Primary" Class="text-center mb-4">
+	You can add bands here
+</Heading>
 
-	<Button Type="ButtonType.Submit" @onclick="Submit">Submit</Button>  
-</Fields>  
+<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Band name:</Label>
+					<TextEdit @bind-Text="band.Name" Placeholder="Band name" />
+				</Field>
+
+				<Field>
+					<Label Class="fs-5 text-dark">Genre:</Label>
+					<Select TValue="Genre" @bind-SelectedValue="band.Genre">
+						@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
+						{
+							<SelectItem Value="@genre">@genre</SelectItem>
+						}
+					</Select>
+				</Field>
+
+				<Button Color="Color.Primary" Text Clicked="Submit">Submit</Button>
+</Container>
+
 
 @code {
 	[Inject]  

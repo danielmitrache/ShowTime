@@ -13,7 +13,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css"/>
-    <link rel="stylesheet" href="app.css"/>
     <link rel="stylesheet" href="ShowTime.styles.css"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
     
@@ -22,13 +21,45 @@
 
     <link href="_content/Blazorise/blazorise.css?v=1.7.7.0" rel="stylesheet" />
     <link href="_content/Blazorise.Bootstrap5/blazorise.bootstrap5.css?v=1.7.7.0" rel="stylesheet" />
-    
+
+
+    <link rel="stylesheet" href="app.css" />
+
     <HeadOutlet/>
 </head>
 
 <body>
+<Blazorise.ThemeProvider Theme="@theme">
 <Routes/>
 <script src="_framework/blazor.web.js"></script>
+</Blazorise.ThemeProvider>
 </body>
 
 </html>
+
+@code {
+    private Theme theme = new Theme
+    {
+        ColorOptions = new ThemeColorOptions
+        {
+            Primary = "#8e44ad",
+            Secondary = "#2c3e50",
+			Success = "#2ecc71",
+            Danger = "#e74c3c",
+            Warning = "#f1c40f",
+            Dark = "#1a1a1a",
+            Light = "#f8f9fa",
+        },
+
+        TextColorOptions = new ThemeTextColorOptions
+        {
+            Primary = "#1a1a1a",
+            Secondary = "#bdc3c7",
+            Success = "#1a1a1a",
+            Danger = "#1a1a1a",
+            Warning = "#1a1a1a",
+            Dark = "#1a1a1a",
+            Light = "#000000",
+        }
+    };
+}

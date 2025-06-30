@@ -5,6 +5,11 @@
         Jazz,
         Pop,
         Rock,
-        Shoegaze
+        Shoegaze,
+        Metal,
+        Indie,
+        Punk,
+        Electronic,
+        HipHop
     }
 }
