@@ -1,7 +1,32 @@
+html, body {
+    margin: 0px;
+    padding: 0px;
+}
+
 .page {
     position: relative;
     display: flex;
     flex-direction: column;
+}
+
+.page.home-page{
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.page.home-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('assets/images/main-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
 }
 
 main {
@@ -10,6 +35,7 @@ main {
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    margin: 0;
 }
 
 .top-row {
@@ -19,6 +45,7 @@ main {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    margin: 0;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
