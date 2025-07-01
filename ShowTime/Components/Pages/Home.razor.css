@@ -1,1 +1,27 @@
-﻿
+﻿#heading {
+    font-family: 'Times New Roman', serif;
+    color: white;
+    font-size: 5rem;
+    font-weight: bold;
+    transform: scaleY(1.79);
+    text-align: center;
+    margin: 2rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.subtitle {
+    font-family: 'Times New Roman', serif;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    transform: scaleY(1.79);
+    text-align: center;
+    margin: 2rem;
+    line-height: 0.8;
+}

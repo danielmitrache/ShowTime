@@ -3,17 +3,16 @@
 
 <PageTitle>Add Band</PageTitle>
 
-<Heading Size="HeadingSize.Is2" TextColor="TextColor.Primary" Class="text-center mb-4">
-	You can add bands here
-</Heading>
+<h1>You can add bands here</h1>
+
 
 <Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Band name:</Label>
-					<TextEdit @bind-Text="band.Name" Placeholder="Band name" />
-				</Field>
+	<Field>
+		<Label Class="fs-5 text-dark">Band name:</Label>
+		<TextEdit @bind-Text="band.Name" Placeholder="Band name" />
+	</Field>
 
-				<Field>
+				@* <Field>
 					<Label Class="fs-5 text-dark">Genre:</Label>
 					<Select TValue="Genre" @bind-SelectedValue="band.Genre">
 						@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
@@ -21,13 +20,28 @@
 							<SelectItem Value="@genre">@genre</SelectItem>
 						}
 					</Select>
-				</Field>
+				</Field> *@
+	<Field>
+		<Label Class="fs-5 text-dark">Genre:</Label>
+		<Autocomplete TItem="Genre"
+					  TValue="Genre"
+					  Data="@genres"
+					  TextField="@(( item ) => item.ToString())"
+					  ValueField="@(( item ) => item)"
+					  @bind-SelectedValue="@band.Genre"
+					  Placeholder="Search..."
+					  Filter="AutocompleteFilter.Contains"
+					  FreeTyping>
+		</Autocomplete>
+	</Field>
 
-				<Button Color="Color.Primary" Text Clicked="Submit">Submit</Button>
+	<Button Color="Color.Primary" Text Clicked="Submit">Submit</Button>
 </Container>
 
 
 @code {
+	public IEnumerable<Genre> genres => Enum.GetValues(typeof(Genre)).Cast<Genre>();
+
 	[Inject]  
 	private IRepositoryBand RepositoryBand { get; set; }  
 
