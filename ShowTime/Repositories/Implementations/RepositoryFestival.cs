@@ -1,4 +1,6 @@
-﻿using ShowTime.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using ShowTime.Context;
+using ShowTime.Entities;
 using ShowTime.Repositories.Interfaces;
 
 namespace ShowTime.Repositories.Implementations
@@ -7,6 +9,13 @@ namespace ShowTime.Repositories.Implementations
     {
         public RepositoryFestival(ShowTimeConext context) : base(context)
         {
+        }
+
+        public async Task<IEnumerable<Festival>> GetAllWithBandsAsync()
+        {
+            return await _context.Festivals
+                                 .Include(f => f.Bands)
+                                 .ToListAsync();
         }
     }
 }

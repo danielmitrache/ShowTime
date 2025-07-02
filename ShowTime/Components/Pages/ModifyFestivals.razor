@@ -3,60 +3,107 @@
 
 <PageTitle>Modify Festivals</PageTitle>
 
-<Card>
-	<CardHeader>
-		<h2>Add a new festival</h2>
-	</CardHeader>
-	<CardBody>
-		<Container TextColor="TextColor.Primary">
-			<Field>
-				<Label Class="fs-5 text-dark">Festival name:</Label>
-				<TextEdit @bind-Text="festival.Name" Placeholder="Festival name" />
-			</Field>
+<Div Class="d-flex flex-column gap-3">
+	<Card>
+		<CardHeader>
+			<h2>Add a new festival</h2>
+		</CardHeader>
+		<CardBody>
+			<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Festival name:</Label>
+					<TextEdit @bind-Text="festival.Name" Placeholder="Festival name" />
+				</Field>
 
-			<Field>
-				<Label Class="fs-5 text-dark">Festival description:</Label>
-				<TextEdit @bind-Text="festival.Description" Placeholder="Festival description" />
-			</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival description:</Label>
+					<TextEdit @bind-Text="festival.Description" Placeholder="Festival description" />
+				</Field>
 
-			<Field>
-				<Label Class="fs-5 text-dark">Festival location:</Label>
-				<TextEdit @bind-Text="festival.Location" Placeholder="Festival location" />
-			</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival location:</Label>
+					<TextEdit @bind-Text="festival.Location" Placeholder="Festival location" />
+				</Field>
 
-			<Field>
-				<Label Class="fs-5 text-dark">Festival start date:</Label>
-				<DatePicker TValue="DateTime" @bind-Date="festival.StartDate" Inline/>
-			</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival start date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="festival.StartDate" Inline/>
+				</Field>
 
-			<Field>
-				<Label Class="fs-5 text-dark">Festival end date:</Label>
-				<DatePicker TValue="DateTime" @bind-Date="festival.EndDate" Inline/>
-			</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival end date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="festival.EndDate" Inline/>
+				</Field>
 
-			<Field>
-				<Label Class="fs-5 text-dark">Bands playing:</Label>
-				<Autocomplete TItem="ShowTime.Entities.Band"
-							  TValue="Guid"
-							  Data="@availableBands"
-							  TextField="@(b => b.Name)"
-							  ValueField="@(b => b.Id)"
-							  Placeholder="Search..."
-							  SelectionMode="AutocompleteSelectionMode.Multiple"
-							  FreeTyping
-							  MinLength="0"
-							  OpenOnFocus="true"
-							  CloseOnSelection="false"
-							  @bind-SelectedValues="selectedBandIds"
-							  @bind-SelectedTexts="selectedBandNames">
-				</Autocomplete>
+				<Field>
+					<Label Class="fs-5 text-dark">Bands playing:</Label>
+					<Autocomplete TItem="ShowTime.Entities.Band"
+								  TValue="Guid"
+								  Data="@availableBands"
+								  TextField="@(b => b.Name)"
+								  ValueField="@(b => b.Id)"
+								  Placeholder="Search..."
+								  SelectionMode="AutocompleteSelectionMode.Multiple"
+								  FreeTyping
+								  MinLength="0"
+								  OpenOnFocus="true"
+								  CloseOnSelection="false"
+								  @bind-SelectedValues="selectedBandIds"
+								  @bind-SelectedTexts="selectedBandNames">
+					</Autocomplete>
 
-			</Field>
+				</Field>
 
-			<Button Color="Color.Success" Clicked="Submit">Add Festival</Button>
-		</Container>
-	</CardBody>
-</Card>
+				<Button Color="Color.Success" Clicked="Submit">Add Festival</Button>
+			</Container>
+		</CardBody>
+	</Card>
+
+	<Card>
+		<CardHeader>
+			<h2>List of bands</h2>
+		</CardHeader>
+		<CardBody>
+
+			<Table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Location</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Bands Playing</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (Festival festival in festivals)
+					{
+						<tr>
+							<td>@festival.Name</td>
+							<td>@festival.Description</td>
+							<td>@festival.Location</td>
+							<td>@festival.StartDate</td>
+							<td>@festival.EndDate</td>
+							<td>
+								@(
+									festival.Bands != null && festival.Bands.Any()
+									? string.Join(" | ", festival.Bands.Select(b => b.Name))
+									: "(none)"
+								)
+							</td>
+							<td>
+								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
+								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</Table>
+		</CardBody>
+	</Card>
+</Div>
 
 <footer>
 	<br />
@@ -69,9 +116,12 @@
 	[Inject]
 	private IRepositoryBand RepositoryBand { get; set; }
 
+	private List<ShowTime.Entities.Festival> festivals = new List<Festival>();
 	private List<Band> availableBands = new List<Band>();
 	protected override async Task OnInitializedAsync()
 	{
+		festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+
 		availableBands = (await RepositoryBand.GetAllAsync()).ToList();
 	}
 
@@ -114,5 +164,16 @@
 		{
 			Console.WriteLine($"Error adding band: {ex.Message}");
 		}
+	}
+
+
+	private async Task EditFestivalAction(Festival festival)
+	{
+		
+	}
+
+	private async Task DeleteFestivalAction(Festival festival)
+	{
+
 	}
 }
