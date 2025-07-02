@@ -10,6 +10,5 @@
         public string? Description { get; set; }
         public ICollection<Band>? Bands { get; set; }
         public ICollection<Booking>? Bookings { get; set; }
-        // Additional properties can be added as needed
     }
 }

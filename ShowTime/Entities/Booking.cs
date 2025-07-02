@@ -11,7 +11,5 @@
         public Guid FestivalId { get; set; }    
 
         public Festival? Festival { get; set; }
-
-        // Additional properties can be added as needed
     }
 }

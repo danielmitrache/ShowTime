@@ -1,0 +1,76 @@
+﻿@page "/bands/delete"
+@rendermode InteractiveServer
+@inject IRepositoryBand RepositoryBand
+<h1>DeleteBand</h1>
+
+<Table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Genre</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (Band band in bands)
+		{
+			<tr>
+				<td>@band.Name</td>
+				<td>@band.Genre</td>
+				<td>
+					<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBandAction(band))">Remove</Button>
+					<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBandAction(band))">Edit</Button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</Table>
+
+@if(triggerEditPopup)
+{
+	<Div Class="popover popover-body" style="position: absolute; top: 30vh; left: 50vw;">
+		<h3>Edit here</h3>
+		<Div Class="d-flex flex-row">
+			<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(BandEdit))">Save</Button>
+			<Button Color="Color.Danger" Text="Close" Clicked="@(() => {triggerEditPopup = false;})">Close</Button>
+		</Div>
+	</Div>
+}
+
+@code {
+	private List<ShowTime.Entities.Band> bands = new List<Band> ();
+
+	protected override async Task OnInitializedAsync()
+	{
+		bands = (await RepositoryBand.GetAllAsync()).ToList();
+		StateHasChanged();
+	}
+
+
+	private async Task DeleteBandAction(Band band)
+	{
+		try
+		{
+			RepositoryBand.Delete(band);
+			await RepositoryBand.SaveChangeAsync();
+			bands = (await RepositoryBand.GetAllAsync()).ToList();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error deleting band: {ex.Message}");
+		}
+	}
+
+	private bool triggerEditPopup = false;
+	private Band BandEdit;
+	private async Task EditBandAction(Band band)
+	{
+		triggerEditPopup = true;
+		BandEdit = band;
+	}
+
+	private async Task SaveEdit(Band band)
+	{
+		
+	}
+}
