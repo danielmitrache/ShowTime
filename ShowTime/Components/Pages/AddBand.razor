@@ -11,16 +11,6 @@
 		<Label Class="fs-5 text-dark">Band name:</Label>
 		<TextEdit @bind-Text="band.Name" Placeholder="Band name" />
 	</Field>
-
-				@* <Field>
-					<Label Class="fs-5 text-dark">Genre:</Label>
-					<Select TValue="Genre" @bind-SelectedValue="band.Genre">
-						@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
-						{
-							<SelectItem Value="@genre">@genre</SelectItem>
-						}
-					</Select>
-				</Field> *@
 	<Field>
 		<Label Class="fs-5 text-dark">Genre:</Label>
 		<Autocomplete TItem="Genre"
@@ -35,7 +25,7 @@
 		</Autocomplete>
 	</Field>
 
-	<Button Color="Color.Primary" Text Clicked="Submit">Submit</Button>
+	<Button Color="Color.Primary" Clicked="Submit">Submit</Button>
 </Container>
 
 

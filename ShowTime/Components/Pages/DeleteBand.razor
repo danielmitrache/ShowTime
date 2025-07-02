@@ -1,43 +1,112 @@
-﻿@page "/bands/delete"
+﻿@page "/bands/modify"
 @rendermode InteractiveServer
 @inject IRepositoryBand RepositoryBand
-<h1>DeleteBand</h1>
 
-<Table>
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Genre</th>
-			<th>Action</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (Band band in bands)
-		{
-			<tr>
-				<td>@band.Name</td>
-				<td>@band.Genre</td>
-				<td>
-					<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBandAction(band))">Remove</Button>
-					<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBandAction(band))">Edit</Button>
-				</td>
-			</tr>
-		}
-	</tbody>
-</Table>
+<PageTitle>Modify Bands</PageTitle>
 
-@if(triggerEditPopup)
-{
-	<Div Class="popover popover-body" style="position: absolute; top: 30vh; left: 50vw;">
-		<h3>Edit here</h3>
-		<Div Class="d-flex flex-row">
-			<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(BandEdit))">Save</Button>
-			<Button Color="Color.Danger" Text="Close" Clicked="@(() => {triggerEditPopup = false;})">Close</Button>
+<Div Class="d-flex flex-column gap-3">
+	<Card>
+		<CardHeader>
+			<h2>Add a new band</h2>
+		</CardHeader>
+		<CardBody>
+
+			<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Band name:</Label>
+					<TextEdit @bind-Text="addedBand.Name" Placeholder="Band name" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Genre:</Label>
+					<Autocomplete TItem="Genre"
+								  TValue="Genre"
+								  Data="@genres"
+								  TextField="@(( item ) => item.ToString())"
+								  ValueField="@(( item ) => item)"
+								  @bind-SelectedValue="@addedBand.Genre"
+								  Placeholder="Search..."
+								  Filter="AutocompleteFilter.Contains"
+								  FreeTyping>
+					</Autocomplete>
+				</Field>
+
+				<Button Color="Color.Success" Clicked="Submit">Add Band</Button>
+			</Container>
+
+		</CardBody>
+	</Card>
+
+	<Card>
+		<CardHeader>
+			<h2>List of bands</h2>
+		</CardHeader>
+		<CardBody>
+
+			<Table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Genre</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (Band band in bands)
+					{
+						<tr>
+							<td>@band.Name</td>
+							<td>@band.Genre</td>
+							<td>
+								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBandAction(band))">Remove</Button>
+								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBandAction(band))">Edit</Button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</Table>
+
+		</CardBody>
+	</Card>
+
+	@if(triggerEditPopup)
+	{
+		<Div Class="popover popover-body" style="position: fixed;
+													top: 20vh;
+													left: 50%;
+													transform: translateX(-50%);
+													z-index: 1000;">
+			<h3>Edit band</h3>
+			<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Band name:</Label>
+					<TextEdit @bind-Text="BandEdit.Name" Placeholder="Band name" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Genre:</Label>
+					<Autocomplete TItem="Genre"
+								  TValue="Genre"
+								  Data="@genres"
+								  TextField="@(( item ) => item.ToString())"
+								  ValueField="@(( item ) => item)"
+								  @bind-SelectedValue="@BandEdit.Genre"
+								  Placeholder="Search..."
+								  Filter="AutocompleteFilter.Contains"
+								  FreeTyping>
+					</Autocomplete>
+				</Field>
+			</Container>
+
+			<Div Class="d-flex flex-row gap-2">
+				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(BandEdit))">Save</Button>
+				<Button Color="Color.Danger" Text="Close" Clicked="@(() => {triggerEditPopup = false;})">Close</Button>
+			</Div>
 		</Div>
-	</Div>
-}
+	}
+
+</Div>
 
 @code {
+	public IEnumerable<Genre> genres => Enum.GetValues(typeof(Genre)).Cast<Genre>();
 	private List<ShowTime.Entities.Band> bands = new List<Band> ();
 
 	protected override async Task OnInitializedAsync()
@@ -66,11 +135,66 @@
 	private async Task EditBandAction(Band band)
 	{
 		triggerEditPopup = true;
-		BandEdit = band;
+		BandEdit = new Band
+		{
+			Id = band.Id,
+			Name = band.Name,
+			Genre = band.Genre
+		};
+
 	}
 
 	private async Task SaveEdit(Band band)
 	{
-		
+		try
+		{
+			var original = await RepositoryBand.GetByIdAsync(BandEdit.Id);
+
+			if (original is null)
+				throw new Exception("Band not found");
+
+			original.Name = BandEdit.Name;
+			original.Genre = BandEdit.Genre;
+
+			await RepositoryBand.SaveChangeAsync();
+
+			bands = (await RepositoryBand.GetAllAsync()).ToList();
+			triggerEditPopup = false;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error saving band: {ex.Message}");
+		}
 	}
+
+
+
+	public Band addedBand { get; set; } = new Band()
+	{
+		Name = string.Empty,
+		Genre = 0,
+	};
+
+	private async Task Submit()
+	{
+		if (String.IsNullOrWhiteSpace(addedBand.Name))
+		{
+			return;
+		}
+
+		try
+		{
+			await RepositoryBand.AddAsync(addedBand);
+			await RepositoryBand.SaveChangeAsync();
+			bands = (await RepositoryBand.GetAllAsync()).ToList();
+			addedBand = new Band() { Name = "", Genre = 0 };
+
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error adding band: {ex.Message}");
+		}
+	}
+
+
 }
