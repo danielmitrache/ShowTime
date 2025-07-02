@@ -1,0 +1,118 @@
+﻿@page "/festivals/modify"
+@rendermode InteractiveServer
+
+<PageTitle>Modify Festivals</PageTitle>
+
+<Card>
+	<CardHeader>
+		<h2>Add a new festival</h2>
+	</CardHeader>
+	<CardBody>
+		<Container TextColor="TextColor.Primary">
+			<Field>
+				<Label Class="fs-5 text-dark">Festival name:</Label>
+				<TextEdit @bind-Text="festival.Name" Placeholder="Festival name" />
+			</Field>
+
+			<Field>
+				<Label Class="fs-5 text-dark">Festival description:</Label>
+				<TextEdit @bind-Text="festival.Description" Placeholder="Festival description" />
+			</Field>
+
+			<Field>
+				<Label Class="fs-5 text-dark">Festival location:</Label>
+				<TextEdit @bind-Text="festival.Location" Placeholder="Festival location" />
+			</Field>
+
+			<Field>
+				<Label Class="fs-5 text-dark">Festival start date:</Label>
+				<DatePicker TValue="DateTime" @bind-Date="festival.StartDate" Inline/>
+			</Field>
+
+			<Field>
+				<Label Class="fs-5 text-dark">Festival end date:</Label>
+				<DatePicker TValue="DateTime" @bind-Date="festival.EndDate" Inline/>
+			</Field>
+
+			<Field>
+				<Label Class="fs-5 text-dark">Bands playing:</Label>
+				<Autocomplete TItem="ShowTime.Entities.Band"
+							  TValue="Guid"
+							  Data="@availableBands"
+							  TextField="@(b => b.Name)"
+							  ValueField="@(b => b.Id)"
+							  Placeholder="Search..."
+							  SelectionMode="AutocompleteSelectionMode.Multiple"
+							  FreeTyping
+							  MinLength="0"
+							  OpenOnFocus="true"
+							  CloseOnSelection="false"
+							  @bind-SelectedValues="selectedBandIds"
+							  @bind-SelectedTexts="selectedBandNames">
+				</Autocomplete>
+
+			</Field>
+
+			<Button Color="Color.Success" Clicked="Submit">Add Festival</Button>
+		</Container>
+	</CardBody>
+</Card>
+
+<footer>
+	<br />
+	<br />
+</footer>
+
+@code {
+	[Inject]
+	private IRepositoryFestival RepositoryFestival { get; set; }
+	[Inject]
+	private IRepositoryBand RepositoryBand { get; set; }
+
+	private List<Band> availableBands = new List<Band>();
+	protected override async Task OnInitializedAsync()
+	{
+		availableBands = (await RepositoryBand.GetAllAsync()).ToList();
+	}
+
+	private List<Guid> selectedBandIds = new(); 
+	private List<string> selectedBandNames = new();
+
+	public Festival festival { get; set; } = new Festival()
+	{
+		Name = string.Empty,
+		StartDate = DateTime.Today,
+		EndDate = DateTime.Today,
+		Description = string.Empty,
+		Location = string.Empty
+	};
+
+	private async Task Submit()
+	{
+		if (String.IsNullOrWhiteSpace(festival.Name))
+		{
+			return;
+		}
+
+		try
+		{
+			festival.Bands = availableBands.Where(b => selectedBandIds.Contains(b.Id)).ToList();
+
+			await RepositoryFestival.AddAsync(festival);
+			await RepositoryFestival.SaveChangeAsync();
+
+			festival = new Festival()
+			{
+				Name = string.Empty,
+				StartDate = DateTime.Today,
+				EndDate = DateTime.Today,
+				Description = string.Empty,
+				Location = string.Empty
+			};
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error adding band: {ex.Message}");
+		}
+	}
+}

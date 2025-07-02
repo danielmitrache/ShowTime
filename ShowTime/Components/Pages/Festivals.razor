@@ -1,5 +1,34 @@
-﻿<h3>Festivals</h3>
+﻿@page "/festivals"
+@using ShowTime.Repositories.Interfaces
+@rendermode InteractiveServer
+
+<PageTitle>Festivals</PageTitle>
+
+<h1>Festivals</h1>
+
+<DataGrid TItem="ShowTime.Entities.Festival" Data="@festivals" Responsive Editable Filterable>
+    <DataGridColumns>
+        <DataGridColumn TItem="ShowTime.Entities.Festival" Field="@nameof(ShowTime.Entities.Festival.Name)" Caption="Name"></DataGridColumn>
+        <DataGridColumn TItem="ShowTime.Entities.Festival" Field="@nameof(ShowTime.Entities.Festival.Description)" Caption="Description"></DataGridColumn>
+        <DataGridColumn TItem="ShowTime.Entities.Festival" Field="@nameof(ShowTime.Entities.Festival.Location)" Caption="Location"></DataGridColumn>
+        <DataGridColumn TItem="ShowTime.Entities.Festival" Field="@nameof(ShowTime.Entities.Festival.StartDate)" Caption="Start Date"></DataGridColumn>
+        <DataGridColumn TItem="ShowTime.Entities.Festival" Field="@nameof(ShowTime.Entities.Festival.EndDate)" Caption="End Date"></DataGridColumn>
+    </DataGridColumns>
+</DataGrid>
+
+
+
 
 @code {
 
+    private List<ShowTime.Entities.Festival> festivals;
+
+    [Inject]
+    private IRepositoryFestival repositoryFestival { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        festivals = (await repositoryFestival.GetAllAsync()).ToList();
+        StateHasChanged();
+    }
 }

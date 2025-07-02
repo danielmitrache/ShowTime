@@ -26,6 +26,8 @@
 								  @bind-SelectedValue="@addedBand.Genre"
 								  Placeholder="Search..."
 								  Filter="AutocompleteFilter.Contains"
+								  MinLength="0"
+								  OpenOnFocus="true"
 								  FreeTyping>
 					</Autocomplete>
 				</Field>
@@ -91,6 +93,8 @@
 								  @bind-SelectedValue="@BandEdit.Genre"
 								  Placeholder="Search..."
 								  Filter="AutocompleteFilter.Contains"
+								  MinLength="0"
+								  OpenOnFocus="true"
 								  FreeTyping>
 					</Autocomplete>
 				</Field>
@@ -114,7 +118,6 @@
 		bands = (await RepositoryBand.GetAllAsync()).ToList();
 		StateHasChanged();
 	}
-
 
 	private async Task DeleteBandAction(Band band)
 	{
