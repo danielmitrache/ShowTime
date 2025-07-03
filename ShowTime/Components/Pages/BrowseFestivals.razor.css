@@ -2,8 +2,7 @@
     font-family: 'Fredoka', serif;
     color: white;
     font-size: 5rem;
-    font-weight: bold;
-    text-decoration: underline;
+
     text-align: center;
     margin: 1rem;
 }
@@ -15,3 +14,13 @@
 .f-roboto {
     font-family: 'Roboto', serif;
 }
+
+.translucent-card {
+    background-color: rgba(142, 68,173, 0.3) !important;
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+}
+

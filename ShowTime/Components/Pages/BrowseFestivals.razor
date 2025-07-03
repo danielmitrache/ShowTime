@@ -9,17 +9,17 @@
     <Div Class="d-flex flex-column gap-3">
         @foreach (var festival in availableFestivals.Select((festival, index) => new { festival, index }))
         {
-            <Card Background="Background.Primary" TextColor="TextColor.Primary">
+            <div class="translucent-card">
                 <CardHeader>
                     <Div Class="d-flex flex-row gap-5">
-                        <h1 class="f-fredoka text-decoration-underline">@festival.festival.Name</h1>
+                        <h1 class="f-roboto text-decoration-underline">@festival.festival.Name</h1>
                         <Button style="max-height: 2.5rem; " Color="Color.Success" TextColor="TextColor.Dark" Clicked="@(() => { BookFestival(festival.festival); })">Book now!</Button>
                     </Div>
                 </CardHeader>
                 <CardBody>
                     <Div Class="mb-3">
-                        <h5 class="f-fredoka fs-4">Line-up:</h5>
-                          <p class="f-fredoka fs-4">@(
+                        <h5 class="f-roboto fs-4">Line-up:</h5>
+                          <p class="f-roboto fs-4">@(
                                festival.festival.Bands != null && festival.festival.Bands.Any()
                                ? string.Join(" · ", festival.festival.Bands.Select(b => b.Name))
                                : "To be announced!"
@@ -29,20 +29,20 @@
                     {
                         <Div Class="d-flex flex-row gap-3">
                             <Icon Name="IconName.Bars"></Icon>
-                            <h5 class="f-fredoka">Description:</h5>
-                            <p class="f-fredoka">@festival.festival.Description</p>
+                            <h5 class="f-roboto">Description:</h5>
+                            <p class="f-roboto">@festival.festival.Description</p>
                         </Div>
 
                         <Div Class="d-flex flex-row gap-3">
                             <Icon Name="IconName.MapMarkerAlt"></Icon>
-                            <h5 class="f-fredoka">Where:</h5>
-                            <p class="f-fredoka">@festival.festival.Location</p>
+                            <h5 class="f-roboto">Where:</h5>
+                            <p class="f-roboto">@festival.festival.Location</p>
                         </Div>
 
                         <Div Class="d-flex flex-row gap-3">
                             <Icon Name="IconName.CalendarDay"></Icon>
-                            <h5 class="f-fredoka">When:</h5>
-                            <p class="f-fredoka">@festival.festival.StartDate.ToShortDateString() - @festival.festival.EndDate.ToShortDateString()</p>
+                            <h5 class="f-roboto">When:</h5>
+                            <p class="f-roboto">@festival.festival.StartDate.ToShortDateString() - @festival.festival.EndDate.ToShortDateString()</p>
                         </Div>
                     }
                     <Div Class="mt-3">
@@ -51,7 +51,7 @@
                         </Button>
                     </Div>
                 </CardBody>
-            </Card>
+            </div>
         }
     </Div>
 </Div>
