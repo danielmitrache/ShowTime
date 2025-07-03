@@ -61,7 +61,7 @@
 
 	<Card>
 		<CardHeader>
-			<h2>List of bands</h2>
+			<h2>List of festivals</h2>
 		</CardHeader>
 		<CardBody>
 
@@ -150,6 +150,7 @@
 
 			await RepositoryFestival.AddAsync(festival);
 			await RepositoryFestival.SaveChangeAsync();
+			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
 
 			festival = new Festival()
 			{
@@ -169,11 +170,20 @@
 
 	private async Task EditFestivalAction(Festival festival)
 	{
-		
+
 	}
 
 	private async Task DeleteFestivalAction(Festival festival)
 	{
-
+		try
+		{
+			RepositoryFestival.Delete(festival);
+			await RepositoryFestival.SaveChangeAsync();
+			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine($"Error deleting festival: {e.Message}");
+		}
 	}
 }
