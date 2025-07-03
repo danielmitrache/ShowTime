@@ -40,7 +40,7 @@
 					</Autocomplete>
 				</Field>
 
-				<Button Color="Color.Success" Clicked="AddBooking">Add Band</Button>
+				<Button Color="Color.Success" Clicked="AddBooking">Add Booking</Button>
 			</Container>
 		</CardBody>
 	</Card>
@@ -55,6 +55,9 @@
 				<thead>
 					<tr>
 						<th>Email</th>
+						<th>Date</th>
+						<th>Price</th>
+						<th>Festival</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -63,6 +66,11 @@
 					{
 						<tr>
 							<td>@booking.Email</td>
+							<td>@booking.Date.ToShortDateString()</td>
+							<td>@booking.Price</td>
+							<td>
+								@availableFestivals.FirstOrDefault(f => f.Id == booking.FestivalId)?.Name
+							</td>
 							<td>
 								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBookingAction(booking))">Remove</Button>
 								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBookingAction(booking))">Edit</Button>
@@ -75,7 +83,58 @@
 		</CardBody>
 	</Card>
 
+	@if (triggerEditPopup)
+	{
+		<Div Class="popover popover-body" style="position: fixed;
+														top: 5vh;
+														left: 50%;
+														transform: translateX(-50%);
+														z-index: 1000;">
+			<h3>Edit booking</h3>
+
+			<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Booking email:</Label>
+					<TextEdit @bind-Text="bookingToBeEdited.Email" Placeholder="Booking email" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="bookingToBeEdited.Date" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Booking price:</Label>
+					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeEdited" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival booked:</Label>
+					<Autocomplete TItem="Festival"
+								  TValue="Guid"
+								  Data="@availableFestivals"
+								  TextField="@(( item ) => item.Name.ToString())"
+								  ValueField="@(( item ) => item.Id)"
+								  @bind-SelectedValue="@bookingToBeEdited.FestivalId"
+								  Placeholder="Search..."
+								  Filter="AutocompleteFilter.Contains"
+								  MinLength="0"
+								  OpenOnFocus="true"
+								  FreeTyping>
+					</Autocomplete>
+				</Field>
+			</Container>
+
+			<Div Class="d-flex flex-row gap-2">
+				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(bookingToBeEdited))">Save</Button>
+				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
+			</Div>
+		</Div>
+	}
+
 </Div>
+
+<footer>
+	<br />
+	<br />
+</footer>
 
 @code {
 	private List<Booking> bookings = new List<Booking>();
@@ -113,11 +172,43 @@
 
 	private async Task DeleteBookingAction(Booking booking)
 	{
-
+		RepositoryBooking.Delete(booking);
+		await RepositoryBooking.SaveChangeAsync();
+		bookings = (await RepositoryBooking.GetAllAsync()).ToList();
 	}
 
+	private bool triggerEditPopup = false;
+	private Booking bookingToBeEdited = new Booking();
+	private decimal priceForBookingToBeEdited = 0;
 	private async Task EditBookingAction(Booking booking)
 	{
-		
+		bookingToBeEdited.Id = booking.Id;
+		bookingToBeEdited.Email = booking.Email;
+		bookingToBeEdited.Price = booking.Price;
+		bookingToBeEdited.Date = booking.Date;
+		bookingToBeEdited.FestivalId = booking.FestivalId;
+		priceForBookingToBeEdited = (decimal)booking.Price;
+		triggerEditPopup = true;
+	}
+
+	private async Task SaveEdit(Booking booking)
+	{
+		try
+		{
+			var original = await RepositoryBooking.GetByIdAsync(bookingToBeEdited.Id);
+			if (original is null)
+				throw new Exception("Booking not found");
+			original.Email = bookingToBeEdited.Email;
+			original.Date = bookingToBeEdited.Date;
+			original.FestivalId = bookingToBeEdited.FestivalId;
+			original.Price = (double)priceForBookingToBeEdited;
+			await RepositoryFestival.SaveChangeAsync();
+			bookings = (await RepositoryBooking.GetAllAsync()).ToList();
+			triggerEditPopup = false;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error saving festival: {ex.Message}");
+		}
 	}
 }
