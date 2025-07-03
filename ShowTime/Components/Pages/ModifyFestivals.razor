@@ -103,6 +103,80 @@
 			</Table>
 		</CardBody>
 	</Card>
+
+
+	@if (triggerEditPopup)
+	{
+		<Div Class="popover popover-body" style="position: fixed;
+														top: 5vh;
+														left: 50%;
+														transform: translateX(-50%);
+														z-index: 1000;
+														min-width: 50vw;">
+			<h2>Edit</h2>
+
+
+			<Container TextColor="TextColor.Primary">
+				<Div Class="d-flex flex-row gap-3">
+
+					<Field>
+						<Label Class="fs-5 text-dark">Festival name:</Label>
+						<TextEdit @bind-Text="festivalToBeEdited.Name" Placeholder="Festival name" />
+					</Field>
+
+					<Field>
+						<Label Class="fs-5 text-dark">Festival description:</Label>
+						<TextEdit @bind-Text="festivalToBeEdited.Description" Placeholder="Festival description" />
+					</Field>
+				</Div>
+
+				<Div Class="d-flex flex-row gap-3">
+
+				<Field>
+					<Label Class="fs-5 text-dark">Festival location:</Label>
+					<TextEdit @bind-Text="festivalToBeEdited.Location" Placeholder="Festival location" />
+				</Field>
+
+				<Field>
+					<Label Class="fs-5 text-dark">Festival start date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.StartDate" />
+				</Field>
+
+
+				<Field>
+					<Label Class="fs-5 text-dark">Festival end date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.EndDate" />
+				</Field>
+				</Div>
+
+				<Field>
+					<Label Class="fs-5 text-dark">Bands playing:</Label>
+					<Autocomplete TItem="ShowTime.Entities.Band"
+					TValue="Guid"
+					Data="@availableBands"
+					TextField="@(b => b.Name)"
+					ValueField="@(b => b.Id)"
+					Placeholder="Search..."
+					SelectionMode="AutocompleteSelectionMode.Multiple"
+					FreeTyping
+					MinLength="0"
+					OpenOnFocus="true"
+					CloseOnSelection="false"
+					@bind-SelectedValues="festivalToBeEditedSelectedBandIds"
+					@bind-SelectedTexts="festivalToBeEditedSelectedBandNames">
+					</Autocomplete>
+				</Field>
+			</Container>
+
+
+			<Div Class="d-flex flex-row gap-2">
+				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
+				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
+			</Div>
+		</Div>
+
+	}
+
 </Div>
 
 <footer>
@@ -167,12 +241,6 @@
 		}
 	}
 
-
-	private async Task EditFestivalAction(Festival festival)
-	{
-
-	}
-
 	private async Task DeleteFestivalAction(Festival festival)
 	{
 		try
@@ -184,6 +252,54 @@
 		catch (Exception e)
 		{
 			Console.WriteLine($"Error deleting festival: {e.Message}");
+		}
+	}
+
+
+
+
+	private bool triggerEditPopup = false;
+	private Festival festivalToBeEdited = new Festival();
+	private List<Guid> festivalToBeEditedSelectedBandIds = new();
+	private List<string> festivalToBeEditedSelectedBandNames = new();
+	private async Task EditFestivalAction(Festival festival)
+	{
+		festivalToBeEdited = new Festival
+		{
+			Id = festival.Id,
+			Name = festival.Name,
+			Description = festival.Description,
+			Location = festival.Location,
+			StartDate = festival.StartDate,
+			EndDate = festival.EndDate,
+			Bands = festival.Bands
+		};
+		festivalToBeEditedSelectedBandIds = festival.Bands?.Select(b => b.Id).ToList() ?? new List<Guid>();
+		festivalToBeEditedSelectedBandNames = festival.Bands?.Select(b => b.Name).ToList() ?? new List<string>();
+
+		triggerEditPopup = true;
+	}
+
+	private async Task SaveEdit(Festival festival)
+	{
+		try
+		{
+			var original = await RepositoryFestival.GetByIdAsync(festivalToBeEdited.Id);
+			if (original is null)
+				throw new Exception("Festival not found");
+			original.Name = festivalToBeEdited.Name;
+			original.Description = festivalToBeEdited.Description;
+			original.Location = festivalToBeEdited.Location;
+			original.StartDate = festivalToBeEdited.StartDate;
+			original.EndDate = festivalToBeEdited.EndDate;
+			original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
+			await RepositoryFestival.SaveChangeAsync();
+			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+			triggerEditPopup = false;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error saving festival: {ex.Message}");
 		}
 	}
 }
