@@ -3,7 +3,7 @@
         <a class="d-flex flex-row navbar-brand d-flex align-items-center" href="">
             <img src="assets/images/ShowTimeLogo.png"
                  alt="ShowTime Logo"
-                 class="d-inline-block align-text-top"
+                 class="d-inline-block align-text-top ms-3"
                  style="width:50px; height: auto;"/>
             <span class="ms-2" style="font-size: 27px;">ShowTime</span>
         </a>
@@ -17,31 +17,43 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <Icon Class="ms-3" Name="IconName.Home"></Icon>
+                <span class="ms-3" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="browsefestivals">
+                <Icon class="ms-3" Name="IconName.Music"></Icon>
+                <span class="ms-3" aria-hidden="true"></span> Browse Festivals
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="bands">
-				<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Bands
+                <Icon Class="ms-3" Name="IconName.Eye"></Icon>
+				<span class="ms-3" aria-hidden="true"></span> Bands
 			</NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="bands/modify">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Modify Bands
+                <Icon Class="ms-5" Name="IconName.Edit"></Icon>
+                <span class="ms-3" aria-hidden="true"></span> Modify Bands
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="festivals">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Festivals
+                <Icon class="ms-3" Name="IconName.Eye"></Icon>
+                <span class="ms-3" aria-hidden="true"></span> Festivals
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="festivals/modify">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Modify Festivals
+                <Icon class="ms-5" Name="IconName.Edit"></Icon>
+                <span class="ms-3" aria-hidden="true"></span> Modify Festivals
             </NavLink>
         </div>
     </nav>

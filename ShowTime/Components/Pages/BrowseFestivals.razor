@@ -1,0 +1,84 @@
+﻿@page "/browsefestivals"
+@using ShowTime.Repositories.Interfaces
+@rendermode InteractiveServer
+@inject IRepositoryFestival RepositoryFestival
+
+<PageTitle>Browse Festivals</PageTitle>
+<Div>
+	<h1 id="heading" class="mb-5">Browse Festivals</h1>
+    <Div Class="d-flex flex-column gap-3">
+        @foreach (var festival in availableFestivals.Select((festival, index) => new { festival, index }))
+        {
+            <Card Background="Background.Primary" TextColor="TextColor.Primary">
+                <CardHeader>
+                    <Div Class="d-flex flex-row gap-5">
+                        <h1 class="f-fredoka text-decoration-underline">@festival.festival.Name</h1>
+                        <Button style="max-height: 2.5rem; " Color="Color.Success" TextColor="TextColor.Dark" Clicked="@(() => { BookFestival(festival.festival); })">Book now!</Button>
+                    </Div>
+                </CardHeader>
+                <CardBody>
+                    <Div Class="mb-3">
+                        <h5 class="f-fredoka fs-4">Line-up:</h5>
+                          <p class="f-fredoka fs-4">@(
+                               festival.festival.Bands != null && festival.festival.Bands.Any()
+                               ? string.Join(" · ", festival.festival.Bands.Select(b => b.Name))
+                               : "To be announced!"
+                              )</p>
+                    </Div>
+                @if (showMoreFlags[festival.index])
+                    {
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Name="IconName.Bars"></Icon>
+                            <h5 class="f-fredoka">Description:</h5>
+                            <p class="f-fredoka">@festival.festival.Description</p>
+                        </Div>
+
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Name="IconName.MapMarkerAlt"></Icon>
+                            <h5 class="f-fredoka">Where:</h5>
+                            <p class="f-fredoka">@festival.festival.Location</p>
+                        </Div>
+
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Name="IconName.CalendarDay"></Icon>
+                            <h5 class="f-fredoka">When:</h5>
+                            <p class="f-fredoka">@festival.festival.StartDate.ToShortDateString() - @festival.festival.EndDate.ToShortDateString()</p>
+                        </Div>
+                    }
+                    <Div Class="mt-3">
+                        <Button Color="Color.Primary" Clicked="@(() => ToggleShowMore(festival.index))">
+                            @(showMoreFlags[festival.index] ? "Show Less" : "Show More")
+                        </Button>
+                    </Div>
+                </CardBody>
+            </Card>
+        }
+    </Div>
+</Div>
+
+<footer>
+	<br />
+	<br />
+	<br />
+</footer>
+
+@code {
+    private List<Festival> availableFestivals = new();
+    private List<bool> showMoreFlags = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        availableFestivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+        showMoreFlags = new List<bool>(new bool[availableFestivals.Count]);
+    }
+
+    private void ToggleShowMore(int index)
+    {
+        showMoreFlags[index] = !showMoreFlags[index];
+    }
+
+    private void BookFestival(Festival festival)
+    {
+        
+    }
+}

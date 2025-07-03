@@ -1,0 +1,13 @@
+﻿#heading {
+    font-family: 'Fredoka', serif;
+    color: white;
+    font-size: 5rem;
+    font-weight: bold;
+    text-decoration: underline;
+    text-align: center;
+    margin: 1rem;
+}
+
+.f-fredoka {
+    font-family: 'Fredoka', serif;
+}

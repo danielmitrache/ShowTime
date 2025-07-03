@@ -29,6 +29,10 @@ html, body {
     z-index: -1;
 }
 
+    .page.browse-festivals {
+        background-color: #41204f;
+    }
+
 main {
     flex: 1;
 }

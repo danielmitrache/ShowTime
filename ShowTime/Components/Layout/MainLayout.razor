@@ -26,6 +26,26 @@
         {
             return "page home-page";
         }
+        else if(NavManager.Uri.Contains("browsefestivals"))
+        {
+            return "page browse-festivals";
+        }
+        else if(NavManager.Uri.Contains("bands/modify"))
+        {
+            return "page modify-bands";
+        }
+        else if(NavManager.Uri.Contains("bands"))
+        {
+            return "page bands";
+        }
+        else if(NavManager.Uri.Contains("festivals/modify"))
+        {
+            return "page modify-festivals";
+        }
+        else if(NavManager.Uri.Contains("festivals"))
+        {
+            return "page festivals";
+		}
         else
         {
             return "page";

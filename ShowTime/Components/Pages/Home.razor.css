@@ -1,11 +1,11 @@
 ﻿#heading {
-    font-family: 'Times New Roman', serif;
+    font-family: 'Fredoka', serif;
     color: white;
     font-size: 5rem;
     font-weight: bold;
-    transform: scaleY(1.79);
+/*    transform: scaleY(1.79);*/
     text-align: center;
-    margin: 2rem;
+    margin: 1rem;
 }
 
 .container {
@@ -16,12 +16,12 @@
 }
 
 .subtitle {
-    font-family: 'Times New Roman', serif;
+    font-family: 'Fredoka', serif;
     color: white;
     font-size: 2rem;
     font-weight: bold;
-    transform: scaleY(1.79);
+/*    transform: scaleY(1.79);*/
     text-align: center;
-    margin: 2rem;
+    margin: 1rem;
     line-height: 0.8;
 }
