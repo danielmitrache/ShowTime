@@ -7,17 +7,15 @@
 
 <DataGrid TItem="ShowTime.Entities.Booking" Data="@bookings" Responsive Editable Filterable>
 	<DataGridColumns>
-		<DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Booking.Email)" Caption="Email" />
-		<DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Booking.Date)" Caption="Date" />
-		<DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Booking.Price)" Caption="Price" />
-		<DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Booking.FestivalId)" Caption="Festival Id" />
+		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Email)" Caption="Email" />
+		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Date)" Caption="Date" />
+		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Price)" Caption="Price" />
 	</DataGridColumns>
 </DataGrid>
 
 
 @code {
-	private List<Booking> bookings;
-
+	private List<Booking> bookings = new List<Booking>();
 	protected override async Task OnInitializedAsync()
 	{
 		bookings = (await RepositoryBooking.GetAllAsync()).ToList();

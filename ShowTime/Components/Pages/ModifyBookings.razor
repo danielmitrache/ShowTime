@@ -1,0 +1,69 @@
+﻿@page "/bookings/modify"
+@rendermode InteractiveServer
+@inject IRepositoryBooking RepositoryBooking
+@inject IRepositoryFestival RepositoryFestival
+
+<PageTitle>Modify Bands</PageTitle>
+
+<Div Class="d-flex flex-column gap-3">
+	<Card>
+		<CardHeader>
+			<h2>Add a new booking</h2>
+		</CardHeader>
+		<CardBody>
+
+		</CardBody>
+	</Card>
+
+	<Card>
+		<CardHeader>
+			<h2>List of bookings</h2>
+		</CardHeader>
+		<CardBody>
+
+			<Table>
+				<thead>
+					<tr>
+						<th>Email</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (Booking booking in bookings)
+					{
+						<tr>
+							<td>@booking.Email</td>
+							<td>
+								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBookingAction(booking))">Remove</Button>
+								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBookingAction(booking))">Edit</Button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</Table>
+
+		</CardBody>
+	</Card>
+
+</Div>
+
+@code {
+	private List<Booking> bookings = new List<Booking>();
+	private List<Festival> availableFestivals = new List<Festival>();
+	protected override async Task OnInitializedAsync()
+	{
+		bookings = (await RepositoryBooking.GetAllAsync()).ToList();
+		availableFestivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+	}
+
+
+	private async Task DeleteBookingAction(Booking booking)
+	{
+
+	}
+
+	private async Task EditBookingAction(Booking booking)
+	{
+		
+	}
+}
