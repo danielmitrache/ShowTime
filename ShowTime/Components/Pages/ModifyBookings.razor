@@ -11,7 +11,37 @@
 			<h2>Add a new booking</h2>
 		</CardHeader>
 		<CardBody>
+			<Container TextColor="TextColor.Primary">
+				<Field>
+					<Label Class="fs-5 text-dark">Booking email:</Label>
+					<TextEdit @bind-Text="bookingToBeAdded.Email" Placeholder="Booking email" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="bookingToBeAdded.Date" Inline />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Booking price:</Label>
+					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeAdded" />
+				</Field>
+				<Field>
+					<Label Class="fs-5 text-dark">Festival booked:</Label>
+					<Autocomplete TItem="Festival"
+								  TValue="Guid"
+								  Data="@availableFestivals"
+								  TextField="@(( item ) => item.Name.ToString())"
+								  ValueField="@(( item ) => item.Id)"
+								  @bind-SelectedValue="@bookingToBeAdded.FestivalId"
+								  Placeholder="Search..."
+								  Filter="AutocompleteFilter.Contains"
+								  MinLength="0"
+								  OpenOnFocus="true"
+								  FreeTyping>
+					</Autocomplete>
+				</Field>
 
+				<Button Color="Color.Success" Clicked="AddBooking">Add Band</Button>
+			</Container>
 		</CardBody>
 	</Card>
 
@@ -56,6 +86,30 @@
 		availableFestivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
 	}
 
+
+	private Booking bookingToBeAdded = new Booking()
+	{
+		Date = DateTime.Now,
+		Email = string.Empty,
+		FestivalId = Guid.Empty,
+		Price = 0
+	};
+	private decimal priceForBookingToBeAdded = 0;
+	private async Task AddBooking()
+	{
+		bookingToBeAdded.Price = (double)priceForBookingToBeAdded;
+		await RepositoryBooking.AddAsync(bookingToBeAdded);
+		await RepositoryBooking.SaveChangeAsync();
+		bookings = (await RepositoryBooking.GetAllAsync()).ToList();
+		bookingToBeAdded = new Booking()
+		{
+			Date = DateTime.Now,
+			Email = string.Empty,
+			FestivalId = Guid.Empty,
+			Price = 0
+		};
+		priceForBookingToBeAdded = 0;
+	}
 
 	private async Task DeleteBookingAction(Booking booking)
 	{
