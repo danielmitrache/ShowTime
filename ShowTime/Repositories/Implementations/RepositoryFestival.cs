@@ -17,5 +17,14 @@ namespace ShowTime.Repositories.Implementations
                                  .Include(f => f.FestivalBands).ThenInclude(fb => fb.Band)
                                  .ToListAsync();
         }
+
+        public async Task<Festival?> GetByIdWithBandsAsync(Guid id)
+        {
+            return await _context.Festivals.Include(f => f.FestivalBands)
+                                           .ThenInclude(fb => fb.Band)
+                                           .FirstOrDefaultAsync(f => f.Id == id);
+        }
+                    
+
     }
 }

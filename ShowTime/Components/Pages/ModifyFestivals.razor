@@ -96,7 +96,10 @@
 							</td>
 							<td>
 								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
-								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
+								<Buttons>
+									<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
+									<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
+								</Buttons>
 							</td>
 						</tr>
 					}
@@ -176,6 +179,71 @@
 			</Div>
 		</Div>
 
+	}
+
+	@if (triggerModifyOrderPopup)
+	{
+		<Div Class="popover popover-body" style="position: fixed;
+															top: 5vh;
+															left: 50%;
+															transform: translateX(-50%);
+															z-index: 1000;
+															min-width: 50vw;">
+			<h2>Modify band order for @festivalToBeEdited.Name</h2>
+
+		@* 	<p>Bands: @(
+				string.Join(" | ", dropBands.Select(dB => dB.Band.Name))
+			)</p>
+		<p>
+			Days: @(
+						string.Join(" | ", dropBands.Select(dB => dB.Day))
+						)
+		</p> *@
+
+		<DropContainer TItem="DropBand"
+					   Items="@dropBands"
+					   ItemsFilter="@( (item, zone) => (item.Day ?? 1) == int.Parse(zone) )"
+					   ItemDropped="OnItemDropped"
+					   Flex="Flex.Wrap.Grow.Is1">
+
+				<ChildContent>
+					@for (int d = 0; d <= 3; d++)
+					{
+						var zone = d.ToString();
+
+						<DropZone TItem="DropBand"
+								  Name="@zone"
+								  AllowReorder
+								  Reordered="OnReorder"
+								  Padding="Padding.Is3"
+								  Margin="Margin.Is3"
+								  Flex="Flex.Grow.Is1">
+
+							<Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom">
+								@if(zone != "0")
+								{
+									<span>Ziua @zone</span>
+								}
+							</Heading>
+						</DropZone>
+					}
+				</ChildContent>
+
+				<ItemTemplate>
+					<Card Shadow="Shadow.Default" Margin="Margin.Is3.OnY">
+						<CardBody>
+							@context.Band.Name
+						</CardBody>
+					</Card>
+				</ItemTemplate>
+			</DropContainer>
+
+
+			<Div Class="d-flex flex-row gap-2">
+				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
+				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerModifyOrderPopup = false; })">Close</Button>
+			</Div>
+		</Div>
 	}
 
 </Div>
@@ -309,7 +377,7 @@
 			original.StartDate = festivalToBeEdited.StartDate;
 			original.EndDate = festivalToBeEdited.EndDate;
 			//original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
-			
+
 			original.FestivalBands = festivalToBeEditedSelectedBandIds
 				.Select((bandId, idx) => new FestivalBand
 				{
@@ -317,7 +385,7 @@
 					BandId = bandId,
 				})
 				.ToList();
-			
+
 			await RepositoryFestival.SaveChangeAsync();
 			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
 			triggerEditPopup = false;
@@ -327,4 +395,59 @@
 			Console.WriteLine($"Error saving festival: {ex.Message}");
 		}
 	}
+
+	private bool triggerModifyOrderPopup = false;
+
+	public class DropBand
+	{
+		public Band Band { get; set; } = default!;
+		public int? Day { get; set; } = 1;
+		public int? Order { get; set; }
+	}
+
+	// ► Lista bind-uită la DropContainer
+	private List<DropBand> dropBands = new();
+
+	// Populezi când deschizi editorul:
+	void LoadBandsForEdit()
+	{
+		dropBands = festivalToBeEdited.FestivalBands
+			.OrderBy(fb => fb.Day ?? 0)
+			.ThenBy(fb => fb.Order ?? 0)
+			.Select(fb => new DropBand
+			{
+				Band = fb.Band,
+				Day = fb.Day ?? 0,
+				Order = fb.Order ?? 0
+			})
+			.ToList();
+	}
+
+	private async Task ModifyBandsOrderAction(Festival festival)
+	{
+
+		festivalToBeEdited = await RepositoryFestival
+			.GetByIdWithBandsAsync(festival.Id);
+
+		LoadBandsForEdit();
+
+		triggerModifyOrderPopup = true;
+
+	}
+
+	Task OnItemDropped(DraggableDroppedEventArgs<DropBand> e)
+	{
+		e.Item.Day = int.Parse(e.DropZoneName);
+		e.Item.Order = e.IndexInZone;
+		return Task.CompletedTask;
+	}
+
+	private Task OnReorder(DropZoneOrder<DropBand> order)
+	{
+		foreach (var item in order.OrderedItems)
+			item.Item.Order = item.Order;
+
+		return Task.CompletedTask;
+	}
+
 }
