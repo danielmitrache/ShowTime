@@ -9,7 +9,7 @@
     <Div Class="d-flex flex-column gap-3">
         @foreach (var festival in availableFestivals.Select((festival, index) => new { festival, index }))
         {
-            <div class="translucent-card">
+            <Card TextColor="TextColor.Primary" Class="custom-translucent-card-1">
                 <CardHeader>
                     <Div Class="d-flex flex-row gap-5">
                         <h1 class="f-roboto text-decoration-underline">@festival.festival.Name</h1>
@@ -20,8 +20,8 @@
                     <Div Class="mb-3">
                         <h5 class="f-roboto fs-4">Line-up:</h5>
                           <p class="f-roboto fs-4">@(
-                               festival.festival.Bands != null && festival.festival.Bands.Any()
-                               ? string.Join(" · ", festival.festival.Bands.Select(b => b.Name))
+                               festival.festival.FestivalBands != null && festival.festival.FestivalBands.Any()
+                               ? string.Join(" · ", festival.festival.FestivalBands.Select(fb => fb.Band.Name))
                                : "To be announced!"
                               )</p>
                     </Div>
@@ -51,7 +51,7 @@
                         </Button>
                     </Div>
                 </CardBody>
-            </div>
+            </Card>
         }
     </Div>
 </Div>

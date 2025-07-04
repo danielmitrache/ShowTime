@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using ShowTime.Components.Layout
 @layout MainLayout
+@inject IRepositoryFestival RepositoryFestival
 
 <PageTitle>Home</PageTitle>
 
@@ -12,7 +13,36 @@
     <h3 class="subtitle">
 		Your personal festival tracker and booking assistant
 	</h3>
-</div>    
+
+   @*  <CardDeck>
+
+        @foreach(Festival festival in upcomingFestivals)
+        {
+            <Card>
+                <CardHeader>
+					<h2 class="f-roboto text-decoration-underline">@festival.Name</h2>
+                </CardHeader>
+
+                <CardBody>
+                    <p class="f-roboto">@festival.Description</p>
+                </CardBody>
+			</Card>
+        }
+
+    </CardDeck> *@
+</div>
 
 
 
+@code {
+	private List<Festival> upcomingFestivals = new List<Festival>();
+    protected override async Task OnInitializedAsync()
+    {
+        upcomingFestivals = (await RepositoryFestival.GetAllAsync()).ToList();
+
+        upcomingFestivals = upcomingFestivals
+            .Where(f => f.StartDate >= DateTime.Now)
+            .OrderBy(f => f.StartDate)
+			.ToList();
+	}
+}

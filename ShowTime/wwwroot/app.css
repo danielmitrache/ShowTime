@@ -50,3 +50,18 @@ h1:focus {
     border-color: #929292;
 }
 
+
+
+.custom-translucent-card-1 {
+    background-color: rgba(142, 68,173, 0.3) !important;
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+}
+
+.custom-translucent-card-1:hover {
+    transform: scale(1.01);
+    transition: transform 0.2s ease-in-out;
+}

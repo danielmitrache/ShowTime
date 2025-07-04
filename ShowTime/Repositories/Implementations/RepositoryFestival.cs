@@ -14,7 +14,7 @@ namespace ShowTime.Repositories.Implementations
         public async Task<IEnumerable<Festival>> GetAllWithBandsAsync()
         {
             return await _context.Festivals
-                                 .Include(f => f.Bands)
+                                 .Include(f => f.FestivalBands).ThenInclude(fb => fb.Band)
                                  .ToListAsync();
         }
     }

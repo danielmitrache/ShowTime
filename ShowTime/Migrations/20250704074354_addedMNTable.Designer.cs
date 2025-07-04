@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShowTime.Context;
 
@@ -11,9 +12,11 @@ using ShowTime.Context;
 namespace ShowTime.Migrations
 {
     [DbContext(typeof(ShowTimeConext))]
-    partial class ShowTimeConextModelSnapshot : ModelSnapshot
+    [Migration("20250704074354_addedMNTable")]
+    partial class addedMNTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,13 +130,13 @@ namespace ShowTime.Migrations
 
             modelBuilder.Entity("ShowTime.Entities.FestivalBand", b =>
                 {
-                    b.HasOne("ShowTime.Entities.Band", "Band")
+                    b.HasOne("ShowTime.Entities.Festival", "Festival")
                         .WithMany("FestivalBands")
                         .HasForeignKey("BandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShowTime.Entities.Festival", "Festival")
+                    b.HasOne("ShowTime.Entities.Band", "Band")
                         .WithMany("FestivalBands")
                         .HasForeignKey("FestivalId")
                         .OnDelete(DeleteBehavior.Cascade)

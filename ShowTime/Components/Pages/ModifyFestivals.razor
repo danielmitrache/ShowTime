@@ -1,4 +1,5 @@
 ﻿@page "/festivals/modify"
+@using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 
 <PageTitle>Modify Festivals</PageTitle>
@@ -88,8 +89,8 @@
 							<td>@festival.EndDate</td>
 							<td>
 								@(
-									festival.Bands != null && festival.Bands.Any()
-									? string.Join(" | ", festival.Bands.Select(b => b.Name))
+									festival.FestivalBands?.Any() != null
+									? string.Join(" | ", festival.FestivalBands.Select(b => b.Band.Name))
 									: "(none)"
 								)
 							</td>
@@ -192,6 +193,7 @@
 
 	private List<ShowTime.Entities.Festival> festivals = new List<Festival>();
 	private List<Band> availableBands = new List<Band>();
+	private List<FestivalBand> availableFestivalBands = new List<FestivalBand>();
 	protected override async Task OnInitializedAsync()
 	{
 		festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
@@ -220,13 +222,28 @@
 
 		try
 		{
-			festival.Bands = availableBands.Where(b => selectedBandIds.Contains(b.Id)).ToList();
+
+			if (string.IsNullOrWhiteSpace(festival.Name)) return;
+
+			festival.Id = Guid.NewGuid();
+
+			var uniqueSelectedBandIds = new HashSet<Guid>(selectedBandIds);
+
+			festival.FestivalBands = uniqueSelectedBandIds
+				.Select((bandId, idx) => new FestivalBand
+				{
+					FestivalId = festival.Id,
+					BandId = bandId,
+ 				})
+				.ToList();
 
 			await RepositoryFestival.AddAsync(festival);
 			await RepositoryFestival.SaveChangeAsync();
 			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
 
-			festival = new Festival()
+			selectedBandIds.Clear();
+			selectedBandNames.Clear();
+			festival = new Festival
 			{
 				Name = string.Empty,
 				StartDate = DateTime.Today,
@@ -272,10 +289,9 @@
 			Location = festival.Location,
 			StartDate = festival.StartDate,
 			EndDate = festival.EndDate,
-			Bands = festival.Bands
 		};
-		festivalToBeEditedSelectedBandIds = festival.Bands?.Select(b => b.Id).ToList() ?? new List<Guid>();
-		festivalToBeEditedSelectedBandNames = festival.Bands?.Select(b => b.Name).ToList() ?? new List<string>();
+		festivalToBeEditedSelectedBandIds = festival.FestivalBands?.Select(fb => fb.Band.Id).ToList() ?? new List<Guid>();
+		festivalToBeEditedSelectedBandNames = festival.FestivalBands?.Select(fb => fb.Band.Name).ToList() ?? new List<string>();
 
 		triggerEditPopup = true;
 	}
@@ -292,7 +308,16 @@
 			original.Location = festivalToBeEdited.Location;
 			original.StartDate = festivalToBeEdited.StartDate;
 			original.EndDate = festivalToBeEdited.EndDate;
-			original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
+			//original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
+			
+			original.FestivalBands = festivalToBeEditedSelectedBandIds
+				.Select((bandId, idx) => new FestivalBand
+				{
+					FestivalId = original.Id,
+					BandId = bandId,
+				})
+				.ToList();
+			
 			await RepositoryFestival.SaveChangeAsync();
 			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
 			triggerEditPopup = false;
