@@ -103,18 +103,11 @@
 		</CardBody>
 	</Card>
 
+		<Modal @bind-Visible="triggerEditPopup" Background="Background.Light" >
 
-	@if (triggerEditPopup)
-	{
-		<Div Class="popover popover-body" style="position: fixed;
-														top: 5vh;
-														left: 50%;
-														transform: translateX(-50%);
-														z-index: 1000;
-														min-width: 50vw;">
-			<h2>Edit</h2>
+			<ModalHeader><h1>Edit</h1></ModalHeader>
 
-
+			<ModalBody Centered>
 			<Container TextColor="TextColor.Primary">
 				<Div Class="d-flex flex-row gap-3">
 
@@ -137,14 +130,8 @@
 				</Field>
 
 				<Field>
-					<Label Class="fs-5 text-dark">Festival start date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.StartDate" />
-				</Field>
-
-
-				<Field>
-					<Label Class="fs-5 text-dark">Festival end date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.EndDate" />
+					<Label Class="fs-5 text-dark">Festival days:</Label>
+					<DatePicker TValue="DateTime?" @bind-Dates="selectedDates" InputMode="DateInputMode.Date" SelectionMode="DateInputSelectionMode.Range" Inline />
 				</Field>
 				</Div>
 
@@ -166,26 +153,25 @@
 					</Autocomplete>
 				</Field>
 			</Container>
+			</ModalBody>
 
-
+			<ModalFooter>
 			<Div Class="d-flex flex-row gap-2">
 				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
 				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
 			</Div>
-		</Div>
+			</ModalFooter>
+		</Modal>
 
-	}
+	
 
 	@if (triggerModifyOrderPopup)
 	{
-		<Div Class="popover popover-body" style="position: fixed;
-															top: 5vh;
-															left: 50%;
-															transform: translateX(-50%);
-															z-index: 1000;
-															min-width: 50vw;">
-			<h2>Modify band order for @festivalToBeEdited.Name</h2>
-
+		<Modal @bind-Visible="triggerModifyOrderPopup" Background="Background.Light" >
+			<ModalHeader>
+			<h1>Modify band order for @festivalToBeEdited.Name</h1>
+			</ModalHeader>
+			<ModalBody>
 		<DropContainer TItem="DropBand"
 					   Items="@dropBands"
 					   ItemsFilter="@( (item, zone) => (item.Day ?? 1) == int.Parse(zone) )"
@@ -223,13 +209,15 @@
 					</Card>
 				</ItemTemplate>
 			</DropContainer>
+			</ModalBody>
 
-
+			<ModalFooter>
 			<Div Class="d-flex flex-row gap-2">
 				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveBandOrder(festivalToBeEdited, dropBands))">Save</Button>
 				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerModifyOrderPopup = false; })">Close</Button>
 			</Div>
-		</Div>
+			</ModalFooter>
+		</Modal>
 	}
 
 </Div>
@@ -365,6 +353,9 @@
 			original.Location = festivalToBeEdited.Location;
 			original.StartDate = festivalToBeEdited.StartDate;
 			original.EndDate = festivalToBeEdited.EndDate;
+
+			original.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
+			original.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
 			//original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
 
 			original.FestivalBands = festivalToBeEditedSelectedBandIds
