@@ -32,6 +32,11 @@
 				</Field>
 
 				<Field>
+					<Label Class="fs-5 text-dark">Ticket price:</Label>
+					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
+				</Field>
+
+				<Field>
 					<Label Class="fs-5 text-dark">Bands playing:</Label>
 					<Autocomplete TItem="ShowTime.Entities.Band"
 								  TValue="Guid"
@@ -69,6 +74,7 @@
 						<th>Location</th>
 						<th>Start Date</th>
 						<th>End Date</th>
+						<th>Ticket Price</th>
 						<th>Bands Playing</th>
 						<th>Action</th>
 					</tr>
@@ -82,6 +88,7 @@
 							<td>@festival.Location</td>
 							<td>@festival.StartDate</td>
 							<td>@festival.EndDate</td>
+							<td>@festival.TicketPrice</td>
 							<td>
 								@(
 									festival.FestivalBands?.Any() != null
@@ -91,10 +98,8 @@
 							</td>
 							<td>
 								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
-								@* <Buttons> *@
-									<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
-									<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
-								@* </Buttons> *@
+								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
+								<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
 							</td>
 						</tr>
 					}
@@ -130,10 +135,21 @@
 				</Field>
 
 				<Field>
-					<Label Class="fs-5 text-dark">Festival days:</Label>
-					<DatePicker TValue="DateTime?" @bind-Dates="selectedDates" InputMode="DateInputMode.Date" SelectionMode="DateInputSelectionMode.Range" Inline />
+					<Label Class="fs-5 text-dark">Start date:</Label>
+					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.StartDate" Inline />
 				</Field>
+
+					<Field>
+						<Label Class="fs-5 text-dark">End date:</Label>
+						<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.EndDate" Inline />
+					</Field>
+
 				</Div>
+
+				<Field>
+					<Label Class="fs-5 text-dark">Ticket price:</Label>
+					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
+				</Field>
 
 				<Field>
 					<Label Class="fs-5 text-dark">Bands playing:</Label>
@@ -233,6 +249,8 @@
 	[Inject]
 	private IRepositoryBand RepositoryBand { get; set; }
 
+	private decimal ticketPrice = 0;
+
 	private List<ShowTime.Entities.Festival> festivals = new List<Festival>();
 	private List<Band> availableBands = new List<Band>();
 	private List<FestivalBand> availableFestivalBands = new List<FestivalBand>();
@@ -272,6 +290,7 @@
 			festival.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
 			festival.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
 			var uniqueSelectedBandIds = new HashSet<Guid>(selectedBandIds);
+			festival.TicketPrice = (double)ticketPrice;
 
 			festival.FestivalBands = uniqueSelectedBandIds
 				.Select((bandId, idx) => new FestivalBand
@@ -337,7 +356,8 @@
 		};
 		festivalToBeEditedSelectedBandIds = festival.FestivalBands?.Select(fb => fb.Band.Id).ToList() ?? new List<Guid>();
 		festivalToBeEditedSelectedBandNames = festival.FestivalBands?.Select(fb => fb.Band.Name).ToList() ?? new List<string>();
-
+		ticketPrice = (decimal)festival.TicketPrice;
+		
 		triggerEditPopup = true;
 	}
 
@@ -354,9 +374,11 @@
 			original.StartDate = festivalToBeEdited.StartDate;
 			original.EndDate = festivalToBeEdited.EndDate;
 
-			original.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
-			original.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
+			//original.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
+			//original.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
 			//original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
+
+			original.TicketPrice = (double)ticketPrice;
 
 			original.FestivalBands = festivalToBeEditedSelectedBandIds
 				.Select((bandId, idx) => new FestivalBand
