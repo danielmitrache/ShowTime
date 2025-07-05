@@ -27,13 +27,8 @@
 				</Field>
 
 				<Field>
-					<Label Class="fs-5 text-dark">Festival start date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="festival.StartDate" Inline/>
-				</Field>
-
-				<Field>
-					<Label Class="fs-5 text-dark">Festival end date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="festival.EndDate" Inline/>
+					<Label Class="fs-5 text-dark">Festival days:</Label>
+					<DatePicker TValue="DateTime?" @bind-Dates="selectedDates" InputMode="DateInputMode.Date" SelectionMode="DateInputSelectionMode.Range" Inline />
 				</Field>
 
 				<Field>
@@ -90,16 +85,16 @@
 							<td>
 								@(
 									festival.FestivalBands?.Any() != null
-									? string.Join(" | ", festival.FestivalBands.Select(b => b.Band.Name))
+									? string.Join(" | ", festival.FestivalBands.OrderBy(b => b.Day).ThenBy(b => b.Order).Select(b => b.Band.Name))
 									: "(none)"
 								)
 							</td>
 							<td>
 								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
-								<Buttons>
+								@* <Buttons> *@
 									<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
 									<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
-								</Buttons>
+								@* </Buttons> *@
 							</td>
 						</tr>
 					}
@@ -191,15 +186,6 @@
 															min-width: 50vw;">
 			<h2>Modify band order for @festivalToBeEdited.Name</h2>
 
-		@* 	<p>Bands: @(
-				string.Join(" | ", dropBands.Select(dB => dB.Band.Name))
-			)</p>
-		<p>
-			Days: @(
-						string.Join(" | ", dropBands.Select(dB => dB.Day))
-						)
-		</p> *@
-
 		<DropContainer TItem="DropBand"
 					   Items="@dropBands"
 					   ItemsFilter="@( (item, zone) => (item.Day ?? 1) == int.Parse(zone) )"
@@ -207,7 +193,7 @@
 					   Flex="Flex.Wrap.Grow.Is1">
 
 				<ChildContent>
-					@for (int d = 0; d <= 3; d++)
+					@for (int d = 0; d <= festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day; d++)
 					{
 						var zone = d.ToString();
 
@@ -240,7 +226,7 @@
 
 
 			<Div Class="d-flex flex-row gap-2">
-				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
+				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveBandOrder(festivalToBeEdited, dropBands))">Save</Button>
 				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerModifyOrderPopup = false; })">Close</Button>
 			</Div>
 		</Div>
@@ -262,6 +248,7 @@
 	private List<ShowTime.Entities.Festival> festivals = new List<Festival>();
 	private List<Band> availableBands = new List<Band>();
 	private List<FestivalBand> availableFestivalBands = new List<FestivalBand>();
+	IReadOnlyList<DateTime?> selectedDates;
 	protected override async Task OnInitializedAsync()
 	{
 		festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
@@ -294,7 +281,8 @@
 			if (string.IsNullOrWhiteSpace(festival.Name)) return;
 
 			festival.Id = Guid.NewGuid();
-
+			festival.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
+			festival.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
 			var uniqueSelectedBandIds = new HashSet<Guid>(selectedBandIds);
 
 			festival.FestivalBands = uniqueSelectedBandIds
@@ -311,6 +299,7 @@
 
 			selectedBandIds.Clear();
 			selectedBandNames.Clear();
+			selectedDates = new List<DateTime?> { DateTime.Today, DateTime.Today };
 			festival = new Festival
 			{
 				Name = string.Empty,
@@ -417,7 +406,7 @@
 			.Select(fb => new DropBand
 			{
 				Band = fb.Band,
-				Day = fb.Day ?? 0,
+				Day = fb.Day >= 1 && fb.Day <= (festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day) ? fb.Day : 0,
 				Order = fb.Order ?? 0
 			})
 			.ToList();
@@ -450,4 +439,20 @@
 		return Task.CompletedTask;
 	}
 
+	private async Task SaveBandOrder(Festival festival, List<DropBand> bandOrder)
+	{
+		festival.FestivalBands = bandOrder
+			.Select(dB => new FestivalBand
+			{
+				FestivalId = festival.Id,
+				BandId = dB.Band.Id,
+				Day = dB.Day,
+				Order = dB.Order
+			})
+			.ToList();
+
+		await RepositoryFestival.SaveChangeAsync();
+		festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
+		triggerModifyOrderPopup = false;
+	}
 }
