@@ -9,25 +9,23 @@ html, body {
     flex-direction: column;
 }
 
-.page.home-page{
-    position: relative;
-    height: 100vh;
-    overflow: hidden;
-}
+    .page.home-page {
+        background-image: url('assets/images/main-bg.jpg');
+        background-repeat: repeat; 
+        background-size: auto;
+        background-position: center;
+    }
 
-.page.home-page::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('assets/images/main-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-}
+
+    .page.home-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
 
     .page.browse-festivals {
         background-image: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmVzdGl2YWx8ZW58MHx8MHx8fDA%3D');
@@ -105,6 +103,12 @@ main {
     .top-row, article {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
+    }
+
+    .page.home-page {
+        position: relative;
+        height: 100vh;
+            overflow: hidden;
     }
 }
 
