@@ -16,3 +16,23 @@
 }
 
 
+.festival-name-class {
+    /* gradient subtil pe text */
+    background: linear-gradient( 90deg, #ffffff 10%, #a14cbd 50%, #ffffff 90% );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* animația care mișcă gradientul */
+    animation: shimmer 5s infinite linear;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+

@@ -5,21 +5,24 @@
 
 <PageTitle>Browse Festivals</PageTitle>
 <Div>
-	<h1 id="heading" class="mb-5">Browse Festivals</h1>
+	<h1 id="heading" class="mb-5 text-color-purplegradient">Browse Festivals</h1>
     <Div Class="d-flex flex-column gap-3">
         @foreach (var festival in availableFestivals.Select((festival, index) => new { festival, index }))
         {
             <Card TextColor="TextColor.Primary" Class="custom-translucent-card-1">
                 <CardHeader>
                     <Div Class="d-flex flex-row gap-5">
-                        <h1 class="f-roboto text-decoration-underline">@festival.festival.Name</h1>
-                        <Button style="max-height: 2.5rem; " Color="Color.Success" TextColor="TextColor.Dark" Clicked="@(() => { BookFestival(festival.festival); })">Book now!</Button>
+                        <h1 class="f-roboto festival-name-class">@festival.festival.Name</h1>
                     </Div>
                 </CardHeader>
                 <CardBody>
-                    <Div Class="mb-3">
-                        <h5 class="f-roboto fs-4">Line-up:</h5>
-                          <p class="f-roboto fs-4">@(
+                    <Div Class="mb-3 d-flex flex-column gap-0">
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Class="m-1" Name="IconName.Users"></Icon>
+                            <h5 class="f-roboto festival-name-class fs-5">Line-up:</h5>
+						</Div>
+                        <p class="f-roboto fs-4 m-0 p-0 festival-name-class">
+                            @(
                                festival.festival.FestivalBands != null && festival.festival.FestivalBands.Any()
                                ? string.Join(" · ", festival.festival.FestivalBands.Select(fb => fb.Band.Name))
                                : "To be announced!"
@@ -46,7 +49,7 @@
                         </Div>
                     }
                     <Div Class="mt-3">
-                        <Button Color="Color.Primary" Clicked="@(() => ToggleShowMore(festival.index))">
+                        <Button Color="Color.Primary" Clicked="@(() => ToggleShowMore(festival.index))" Outline Class="custom-browsefestival-buttons">
                             @(showMoreFlags[festival.index] ? "Show Less" : "Show More")
                         </Button>
                     </Div>
@@ -75,10 +78,5 @@
     private void ToggleShowMore(int index)
     {
         showMoreFlags[index] = !showMoreFlags[index];
-    }
-
-    private void BookFestival(Festival festival)
-    {
-        
     }
 }

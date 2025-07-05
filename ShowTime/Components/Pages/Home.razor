@@ -7,29 +7,53 @@
 
 
 <div class="container">
-    <h1 id="heading">
+    <Div Class="d-flex flex-column gap-0">
+    <h1 id="heading" class="text-color-purplegradient">
         ShowTime
     </h1>
     <h3 class="subtitle">
 		Your personal festival tracker and booking assistant
 	</h3>
+    </Div>
 
-   @*  <CardDeck>
+    <Div Class="d-flex flex-column mt-3 mb-5" Style="width: 100%;">
+        <h1 class="text-center text-color-purplegradient" style="font-family: 'Fredoka', 'Sans Serif Collection';">Upcoming festivals:</h1>
 
-        @foreach(Festival festival in upcomingFestivals)
-        {
-            <Card>
-                <CardHeader>
-					<h2 class="f-roboto text-decoration-underline">@festival.Name</h2>
-                </CardHeader>
+        <CardDeck>
 
-                <CardBody>
-                    <p class="f-roboto">@festival.Description</p>
-                </CardBody>
-			</Card>
-        }
+            @foreach(Festival festival in upcomingFestivals)
+            {
+                <Card Class="home-custom-card">
+                    <CardHeader Class="home-custom-card-header">
+					    <h2 class="f-roboto">@festival.Name</h2>
+                    </CardHeader>
 
-    </CardDeck> *@
+                    <CardBody Class="home-custom-card-body">
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Name="IconName.MapMarkerAlt"></Icon>
+                            <p class="f-roboto">@festival.Location</p>
+                        </Div>
+
+                        <Div Class="d-flex flex-row gap-3">
+                            <Icon Name="IconName.CalendarDay"></Icon>
+                            <p class="f-roboto text-nowrap p-0 m-0">@festival.StartDate.ToShortDateString() - @festival.EndDate.ToShortDateString()</p>
+                        </Div>
+                    </CardBody>
+
+                    <CardFooter>
+                        <Button Color="Color.Primary" Outline Class="custom-browsefestival-buttons">Show more</Button>
+                    </CardFooter>
+			    </Card>
+            }
+
+        </CardDeck>
+    </Div>
+
+    <NavLink href="browsefestivals">
+    <button class="custom-morefestivals-button" >
+        Browse festivals
+        </button>
+    </NavLink>
 </div>
 
 
@@ -41,8 +65,9 @@
         upcomingFestivals = (await RepositoryFestival.GetAllAsync()).ToList();
 
         upcomingFestivals = upcomingFestivals
-            .Where(f => f.StartDate >= DateTime.Now)
+            .Where(f => f.StartDate.Date >= DateTime.Now.Date)
             .OrderBy(f => f.StartDate)
-			.ToList();
+			.ToList()
+            .Slice(0,3);
 	}
 }

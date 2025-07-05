@@ -1,9 +1,6 @@
 ﻿#heading {
     font-family: 'Fredoka', serif;
-    color: white;
     font-size: 5rem;
-/*    font-weight: bold;*/
-/*    transform: scaleY(1.79);*/
     text-align: center;
     margin: 1rem;
 }
@@ -19,9 +16,60 @@
     font-family: 'Fredoka', serif;
     color: white;
     font-size: 2rem;
-/*    font-weight: bold;*/
-/*    transform: scaleY(1.79);*/
     text-align: center;
     margin: 1rem;
     line-height: 0.8;
+}
+
+
+
+.custom-morefestivals-button {
+    position: relative;
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #9b59b6;
+    color: #fff;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: bold;
+    font-size: 1.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(159, 52, 166, 0.6);
+}
+
+    .custom-morefestivals-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient( 90deg, rgba(75, 0, 90, 0) 0%, rgba(75, 0, 90, 1) 25%, rgba(75, 0, 90, 1) 75%, rgba(75, 0, 90, 0) 100% );
+        transform: translateX(-100%);
+        animation: shimmer 1.5s infinite;
+        animation-play-state: paused;
+        z-index: -1;
+    }
+
+    .custom-morefestivals-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+        .custom-morefestivals-button:hover::before {
+            animation-play-state: running;
+        }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
 }
