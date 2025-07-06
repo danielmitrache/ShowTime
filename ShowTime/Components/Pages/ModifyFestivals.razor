@@ -356,7 +356,7 @@
 		};
 		festivalToBeEditedSelectedBandIds = festival.FestivalBands?.Select(fb => fb.Band.Id).ToList() ?? new List<Guid>();
 		festivalToBeEditedSelectedBandNames = festival.FestivalBands?.Select(fb => fb.Band.Name).ToList() ?? new List<string>();
-		ticketPrice = (decimal)festival.TicketPrice;
+		ticketPrice = festival.TicketPrice != null ? (decimal)festival.TicketPrice : 0;
 		
 		triggerEditPopup = true;
 	}

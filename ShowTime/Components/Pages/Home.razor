@@ -2,6 +2,7 @@
 @using ShowTime.Components.Layout
 @layout MainLayout
 @inject IRepositoryFestival RepositoryFestival
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
@@ -41,7 +42,9 @@
                     </CardBody>
 
                     <CardFooter>
+                        <NavLink href="@( $"/browsefestivals/festival-details/{festival.Id}" )">
                         <Button Color="Color.Primary" Outline Class="custom-browsefestival-buttons">Show more</Button>
+                        </NavLink>
                     </CardFooter>
 			    </Card>
             }
@@ -52,22 +55,37 @@
     <NavLink href="browsefestivals">
     <button class="custom-morefestivals-button" >
         Browse festivals
-        </button>
+    </button>
     </NavLink>
 </div>
 
 
 
 @code {
-	private List<Festival> upcomingFestivals = new List<Festival>();
+    private List<Festival> upcomingFestivals = new List<Festival>();
     protected override async Task OnInitializedAsync()
     {
         upcomingFestivals = (await RepositoryFestival.GetAllAsync()).ToList();
 
-        upcomingFestivals = upcomingFestivals
-            .Where(f => f.StartDate.Date >= DateTime.Now.Date)
-            .OrderBy(f => f.StartDate)
-			.ToList()
-            .Slice(0,3);
-	}
+        try {
+            upcomingFestivals = upcomingFestivals
+                .Where(f => f.StartDate.Date >= DateTime.Now.Date)
+                .OrderBy(f => f.StartDate)
+                .ToList()
+                .Slice(0,3);
+        }
+        catch (Exception ex)
+        {
+            upcomingFestivals = upcomingFestivals
+                .Where(f => f.StartDate.Date >= DateTime.Now.Date)
+                .OrderBy(f => f.StartDate)
+                .ToList();
+        }
+    }
+
+    private Task navigateToDetailsPage(Festival festival)
+    {
+        NavigationManager.NavigateTo($"/festivals/{festival.Id}");
+        return Task.CompletedTask;
+    }
 }

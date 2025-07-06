@@ -26,6 +26,10 @@
         {
             return "page home-page";
         }
+        else if (NavManager.Uri.Contains("browsefestivals/festival-details"))
+        {
+			return "page festival-details";
+        }
         else if(NavManager.Uri.Contains("browsefestivals"))
         {
             return "page browse-festivals";
@@ -45,7 +49,7 @@
         else if(NavManager.Uri.Contains("festivals"))
         {
             return "page festivals";
-		}
+        }
         else
         {
             return "page";

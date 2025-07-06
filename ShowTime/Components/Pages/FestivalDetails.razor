@@ -1,0 +1,54 @@
+﻿@page "/browsefestivals/festival-details/{Id:guid}"
+@inject IRepositoryFestival RepositoryFestival
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<Div Class="d-flex flex-column gap-0">
+	<Button Color="Color.Primary" Clicked="@(() => navigatoToBrowsing())" Outline Class="custom-browsefestival-buttons"><Icon Name="IconName.Backward" Class="m-1"></Icon>Back to browsing festivals</Button>
+
+	<h1 id="heading" class="mb-5 text-color-purplegradient">@festivalForDetails.Name</h1>
+
+
+	<Div Class="d-flex flex-column gap-0 align-content-center">
+		<Div Class="d-flex flex-row gap-1">
+			<Icon Name="IconName.MapMarkerAlt" TextColor="TextColor.Primary" IconSize="IconSize.x2"></Icon>
+			<p class="f-fredoka festival-locdate">@festivalForDetails.Location</p>
+		</Div>
+
+		<Div Class="d-flex flex-row gap-3">
+			<Icon Name="IconName.CalendarDay" TextColor="TextColor.Primary" IconSize="IconSize.x2"></Icon>
+			<p class="f-fredoka festival-locdate">@festivalForDetails.StartDate.ToShortDateString() - @festivalForDetails.EndDate.ToShortDateString()</p>
+		</Div>
+	</Div>
+
+
+	<p class="festival-description f-fredoka">@festivalForDetails.Description</p>
+
+
+	<h1 id="heading" class="mb-5 text-color-purplegradient" style="font-size: 4rem;">Line-up</h1>
+
+
+</Div>
+
+<footer>
+<br />
+<br />
+<br />
+</footer>
+@code {
+
+	[Parameter]
+	public Guid Id { get; set; }
+
+
+	Festival festivalForDetails = new Festival();
+	protected async override Task OnInitializedAsync()
+	{
+		festivalForDetails = await RepositoryFestival.GetByIdWithBandsAsync(Id);
+	}
+
+	private void navigatoToBrowsing()
+	{
+		NavigationManager.NavigateTo("/browsefestivals");
+	}
+}

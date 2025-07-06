@@ -3,6 +3,8 @@
 @rendermode InteractiveServer
 @inject IRepositoryFestival RepositoryFestival
 
+@inject NavigationManager NavigationManager
+
 <PageTitle>Browse Festivals</PageTitle>
 <Div>
 	<h1 id="heading" class="mb-5 text-color-purplegradient">Browse Festivals</h1>
@@ -28,7 +30,7 @@
                                : "To be announced!"
                               )</p>
                     </Div>
-                @if (showMoreFlags[festival.index])
+                @* @if (showMoreFlags[festival.index])
                     {
                         <Div Class="d-flex flex-row gap-3">
                             <Icon Name="IconName.Bars"></Icon>
@@ -47,10 +49,10 @@
                             <h5 class="f-roboto">When:</h5>
                             <p class="f-roboto">@festival.festival.StartDate.ToShortDateString() - @festival.festival.EndDate.ToShortDateString()</p>
                         </Div>
-                    }
+                    } *@
                     <Div Class="mt-3">
-                        <Button Color="Color.Primary" Clicked="@(() => ToggleShowMore(festival.index))" Outline Class="custom-browsefestival-buttons">
-                            @(showMoreFlags[festival.index] ? "Show Less" : "Show More")
+                        <Button Color="Color.Primary" Clicked="@(() => navigatoToFestivalDetails(festival.festival))" Outline Class="custom-browsefestival-buttons">
+                            Show more
                         </Button>
                     </Div>
                 </CardBody>
@@ -67,16 +69,21 @@
 
 @code {
     private List<Festival> availableFestivals = new();
-    private List<bool> showMoreFlags = new();
+    // private List<bool> showMoreFlags = new();
 
     protected override async Task OnInitializedAsync()
     {
         availableFestivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
-        showMoreFlags = new List<bool>(new bool[availableFestivals.Count]);
+        // showMoreFlags = new List<bool>(new bool[availableFestivals.Count]);
     }
 
-    private void ToggleShowMore(int index)
+    // private void ToggleShowMore(int index)
+    // {
+    //     showMoreFlags[index] = !showMoreFlags[index];
+    // }
+
+    private void navigatoToFestivalDetails(Festival festival)
     {
-        showMoreFlags[index] = !showMoreFlags[index];
+        NavigationManager.NavigateTo($"browsefestivals/festival-details/{festival.Id}");
     }
 }

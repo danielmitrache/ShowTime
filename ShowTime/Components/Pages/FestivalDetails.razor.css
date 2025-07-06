@@ -1,0 +1,29 @@
+﻿#heading {
+    font-family: 'Fredoka', serif;
+    color: white;
+    font-size: 5rem;
+    text-align: center;
+    margin: 1rem;
+}
+
+.f-fredoka {
+    font-family: 'Fredoka', serif;
+}
+
+.festival-description {
+    color: white;
+    font-size: 1.25rem;
+    text-align: center;
+    background: linear-gradient( 90deg, rgba(46, 0, 62, 0) 0%, /* transparent mov închis */
+    rgba(46, 0, 62, 0.8) 20%, /* mov foarte închis semi-transparent */
+    #580f7e 50%, /* mov închis pur */
+    rgba(46, 0, 62, 0.8) 80%, /* mov foarte închis semi-transparent */
+    rgba(46, 0, 62, 0) 100% /* transparent mov închis */
+    );
+}
+
+.festival-locdate {
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+}
