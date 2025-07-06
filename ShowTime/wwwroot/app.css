@@ -82,7 +82,11 @@ h1:focus {
     font-weight: bold;
     font-family: 'Roboto', sans;
 }
-
+.custom-bookticket-buttons {
+    border: solid rgba(40, 167, 69, 1) 0.2rem !important;
+    font-weight: bold;
+    font-family: 'Roboto', sans;
+}
 
 
 .home-custom-card {
@@ -137,4 +141,24 @@ h1:focus {
 
 
 
+
+/*--------------*/
+.custom-translucent-card-fdetails {
+    background-color: rgba(142, 68, 173, 0.3) !important;
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+    animation: glow-purple 2s infinite ease-in-out alternate;
+}
+
+@keyframes glow-purple {
+    from {
+        box-shadow: 0 0 10px rgba(142, 68, 173, 0.7), 0 0 20px rgba(142, 68, 173, 0.5);
+    }
+
+    to {
+        box-shadow: 0 0 20px rgba(142, 68, 173, 1), 0 0 40px rgba(142, 68, 173, 0.8);
+    }
+}
 

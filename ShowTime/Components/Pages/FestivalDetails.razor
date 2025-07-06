@@ -4,7 +4,10 @@
 @rendermode InteractiveServer
 
 <Div Class="d-flex flex-column gap-0">
+	<Div Class="d-flex flex-column gap-1">
 	<Button Color="Color.Primary" Clicked="@(() => navigatoToBrowsing())" Outline Class="custom-browsefestival-buttons"><Icon Name="IconName.Backward" Class="m-1"></Icon>Back to browsing festivals</Button>
+	<Button Color="Color.Success" Clicked="@(() => navigatoToBrowsing())" Outline Class="custom-bookticket-buttons"><Icon Name="IconName.CartPlus" Class="m-1"></Icon>Book a ticket for @festivalForDetails.Name</Button>
+	</Div>
 
 	<h1 id="heading" class="mb-5 text-color-purplegradient">@festivalForDetails.Name</h1>
 
@@ -28,13 +31,42 @@
 	<h1 id="heading" class="mb-5 text-color-purplegradient" style="font-size: 4rem;">Line-up</h1>
 
 
+	@{
+		int totalDays = festivalForDetails.EndDate.Day - festivalForDetails.StartDate.Day + 1;
+	}
+
+	@if(festivalBandsByDay != null && festivalBandsByDay.Count >= totalDays)
+	{
+		<CardDeck>
+			@for (int i = 0; i < totalDays; i++)
+			{
+				var currDay = i;
+				<Card Class="custom-translucent-card-fdetails" TextAlignment="TextAlignment.Center">
+					<CardHeader>
+						<h2 class="card-header-text f-fredoka">Day @(currDay + 1)</h2>
+					</CardHeader>
+					<CardBody>
+						<Div Class="d-flex flex-column gap-3">
+							@foreach (var band in festivalBandsByDay[currDay])
+							{
+								<h5 class="card-body-text f-fredoka">- @band.Name -</h5>
+							}
+						</Div>
+					</CardBody>
+				</Card>
+			}
+		</CardDeck>
+	}
+
+
 </Div>
 
 <footer>
-<br />
-<br />
-<br />
+	<br />
+	<br />
+	<br />
 </footer>
+
 @code {
 
 	[Parameter]
@@ -45,10 +77,41 @@
 	protected async override Task OnInitializedAsync()
 	{
 		festivalForDetails = await RepositoryFestival.GetByIdWithBandsAsync(Id);
+		GroupBandsByDay();
 	}
 
 	private void navigatoToBrowsing()
 	{
 		NavigationManager.NavigateTo("/browsefestivals");
 	}
+
+	private List<List<Band>> festivalBandsByDay = new List<List<Band>>();
+	private void GroupBandsByDay()
+	{
+		if (festivalForDetails.FestivalBands == null || !festivalForDetails.FestivalBands.Any())
+			return;
+
+		int totalDays = festivalForDetails.EndDate.Day - festivalForDetails.StartDate.Day + 1;
+
+		festivalBandsByDay = Enumerable
+			.Range(0, totalDays)
+			.Select(_ => new List<Band>())
+			.ToList();
+
+		foreach (var festivalBand in festivalForDetails.FestivalBands)
+		{
+			int dayNumber = festivalBand.Day ?? 0;
+			int index = dayNumber - 1;
+
+			if (index >= 0 && index < festivalBandsByDay.Count)
+			{
+				festivalBandsByDay[index].Add(festivalBand.Band);
+			}
+			else
+			{
+				Console.WriteLine($"Zi invalidă {dayNumber}");
+			}
+		}
+	}
+
 }

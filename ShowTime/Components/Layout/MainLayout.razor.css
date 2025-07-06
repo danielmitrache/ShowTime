@@ -118,12 +118,7 @@ main {
             overflow: hidden;
     }
 
-    .page.festival-details {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/images/FestivalDetailsBackground.png');
-        background-size: cover;
-        background-position: center;
-        overflow: hidden;
-    }
+
 }
 
 #blazor-error-ui {

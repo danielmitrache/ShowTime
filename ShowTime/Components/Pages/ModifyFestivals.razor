@@ -195,7 +195,7 @@
 					   Flex="Flex.Wrap.Grow.Is1">
 
 				<ChildContent>
-					@for (int d = 0; d <= festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day; d++)
+					@for (int d = 0; d <= festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day + 1; d++)
 					{
 						var zone = d.ToString();
 
@@ -419,7 +419,7 @@
 			.Select(fb => new DropBand
 			{
 				Band = fb.Band,
-				Day = fb.Day >= 1 && fb.Day <= (festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day) ? fb.Day : 0,
+				Day = fb.Day >= 1 && fb.Day <= (festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day + 1) ? fb.Day : 0,
 				Order = fb.Order ?? 0
 			})
 			.ToList();
