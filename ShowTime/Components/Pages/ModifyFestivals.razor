@@ -343,6 +343,7 @@
 	private Festival festivalToBeEdited = new Festival();
 	private List<Guid> festivalToBeEditedSelectedBandIds = new();
 	private List<string> festivalToBeEditedSelectedBandNames = new();
+	private List<FestivalBand> festivalToBeEditedFestivalBands = new();
 	private async Task EditFestivalAction(Festival festival)
 	{
 		festivalToBeEdited = new Festival
@@ -357,7 +358,9 @@
 		festivalToBeEditedSelectedBandIds = festival.FestivalBands?.Select(fb => fb.Band.Id).ToList() ?? new List<Guid>();
 		festivalToBeEditedSelectedBandNames = festival.FestivalBands?.Select(fb => fb.Band.Name).ToList() ?? new List<string>();
 		ticketPrice = festival.TicketPrice != null ? (decimal)festival.TicketPrice : 0;
-		
+
+		festivalToBeEditedFestivalBands = festival.FestivalBands?.ToList() ?? new List<FestivalBand>();
+
 		triggerEditPopup = true;
 	}
 
@@ -374,19 +377,43 @@
 			original.StartDate = festivalToBeEdited.StartDate;
 			original.EndDate = festivalToBeEdited.EndDate;
 
-			//original.StartDate = selectedDates.FirstOrDefault() ?? DateTime.Today;
-			//original.EndDate = selectedDates.LastOrDefault() ?? DateTime.Today;
-			//original.Bands = availableBands.Where(b => festivalToBeEditedSelectedBandIds.Contains(b.Id)).ToList();
 
 			original.TicketPrice = (double)ticketPrice;
 
-			original.FestivalBands = festivalToBeEditedSelectedBandIds
-				.Select((bandId, idx) => new FestivalBand
+			foreach(var febsi in festivalToBeEditedSelectedBandIds)
+			{
+				bool found = false;
+				foreach(var fefb in festivalToBeEditedFestivalBands)
 				{
-					FestivalId = original.Id,
-					BandId = bandId,
-				})
-				.ToList();
+					if(fefb.BandId == febsi)
+					{
+						found = true;
+						original.FestivalBands.Add(new FestivalBand
+						{
+							FestivalId = original.Id,
+							BandId = fefb.BandId,
+							Day = fefb.Day,
+							Order = fefb.Order
+						});
+					}
+				}
+				if(!found)
+				{
+					original.FestivalBands.Add(new FestivalBand
+					{
+						FestivalId = original.Id,
+						BandId = febsi,
+					});
+				}
+			}
+
+			// original.FestivalBands = festivalToBeEditedSelectedBandIds
+			// 	.Select((bandId, idx) => new FestivalBand
+			// 	{
+			// 		FestivalId = original.Id,
+			// 		BandId = bandId,
+			// 	})
+			// 	.ToList();
 
 			await RepositoryFestival.SaveChangeAsync();
 			festivals = (await RepositoryFestival.GetAllWithBandsAsync()).ToList();
