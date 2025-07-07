@@ -4,244 +4,254 @@
 
 <PageTitle>Modify Festivals</PageTitle>
 
-<Div Class="d-flex flex-column gap-3">
-	<Card>
-		<CardHeader>
-			<h2>Add a new festival</h2>
-		</CardHeader>
-		<CardBody>
-			<Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Festival name:</Label>
-					<TextEdit @bind-Text="festival.Name" Placeholder="Festival name" />
-				</Field>
+<AuthorizeView Roles="Admin" Context="authState">
 
-				<Field>
-					<Label Class="fs-5 text-dark">Festival description:</Label>
-					<TextEdit @bind-Text="festival.Description" Placeholder="Festival description" />
-				</Field>
+	<Authorized>
+		<Div Class="d-flex flex-column gap-3">
+			<Card>
+				<CardHeader>
+					<h2>Add a new festival</h2>
+				</CardHeader>
+				<CardBody>
+					<Container TextColor="TextColor.Primary">
+						<Field>
+							<Label Class="fs-5 text-dark">Festival name:</Label>
+							<TextEdit @bind-Text="festival.Name" Placeholder="Festival name" />
+						</Field>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Festival location:</Label>
-					<TextEdit @bind-Text="festival.Location" Placeholder="Festival location" />
-				</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival description:</Label>
+							<TextEdit @bind-Text="festival.Description" Placeholder="Festival description" />
+						</Field>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Festival days:</Label>
-					<DatePicker TValue="DateTime?" @bind-Dates="selectedDates" InputMode="DateInputMode.Date" SelectionMode="DateInputSelectionMode.Range" Inline />
-				</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival location:</Label>
+							<TextEdit @bind-Text="festival.Location" Placeholder="Festival location" />
+						</Field>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Ticket price:</Label>
-					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
-				</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival days:</Label>
+							<DatePicker TValue="DateTime?" @bind-Dates="selectedDates" InputMode="DateInputMode.Date" SelectionMode="DateInputSelectionMode.Range" Inline />
+						</Field>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Bands playing:</Label>
-					<Autocomplete TItem="ShowTime.Entities.Band"
-								  TValue="Guid"
-								  Data="@availableBands"
-								  TextField="@(b => b.Name)"
-								  ValueField="@(b => b.Id)"
-								  Placeholder="Search..."
-								  SelectionMode="AutocompleteSelectionMode.Multiple"
-								  FreeTyping
-								  MinLength="0"
-								  OpenOnFocus="true"
-								  CloseOnSelection="false"
-								  @bind-SelectedValues="selectedBandIds"
-								  @bind-SelectedTexts="selectedBandNames">
-					</Autocomplete>
+						<Field>
+							<Label Class="fs-5 text-dark">Ticket price:</Label>
+							<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
+						</Field>
 
-				</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Bands playing:</Label>
+							<Autocomplete TItem="ShowTime.Entities.Band"
+										  TValue="Guid"
+										  Data="@availableBands"
+										  TextField="@(b => b.Name)"
+										  ValueField="@(b => b.Id)"
+										  Placeholder="Search..."
+										  SelectionMode="AutocompleteSelectionMode.Multiple"
+										  FreeTyping
+										  MinLength="0"
+										  OpenOnFocus="true"
+										  CloseOnSelection="false"
+										  @bind-SelectedValues="selectedBandIds"
+										  @bind-SelectedTexts="selectedBandNames">
+							</Autocomplete>
 
-				<Button Color="Color.Success" Clicked="Submit">Add Festival</Button>
-			</Container>
-		</CardBody>
-	</Card>
+						</Field>
 
-	<Card>
-		<CardHeader>
-			<h2>List of festivals</h2>
-		</CardHeader>
-		<CardBody>
+						<Button Color="Color.Success" Clicked="Submit">Add Festival</Button>
+					</Container>
+				</CardBody>
+			</Card>
 
-			<Table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Description</th>
-						<th>Location</th>
-						<th>Start Date</th>
-						<th>End Date</th>
-						<th>Ticket Price</th>
-						<th>Bands Playing</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (Festival festival in festivals)
-					{
-						<tr>
-							<td>@festival.Name</td>
-							<td>@festival.Description</td>
-							<td>@festival.Location</td>
-							<td>@festival.StartDate</td>
-							<td>@festival.EndDate</td>
-							<td>@festival.TicketPrice</td>
-							<td>
-								@(
-									festival.FestivalBands?.Any() != null
-									? string.Join(" | ", festival.FestivalBands.OrderBy(b => b.Day).ThenBy(b => b.Order).Select(b => b.Band.Name))
-									: "(none)"
-								)
-							</td>
-							<td>
-								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
-								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
-								<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</Table>
-		</CardBody>
-	</Card>
+			<Card>
+				<CardHeader>
+					<h2>List of festivals</h2>
+				</CardHeader>
+				<CardBody>
 
-		<Modal @bind-Visible="triggerEditPopup" Background="Background.Light" >
+					<Table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Description</th>
+								<th>Location</th>
+								<th>Start Date</th>
+								<th>End Date</th>
+								<th>Ticket Price</th>
+								<th>Bands Playing</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (Festival festival in festivals)
+							{
+								<tr>
+									<td>@festival.Name</td>
+									<td>@festival.Description</td>
+									<td>@festival.Location</td>
+									<td>@festival.StartDate</td>
+									<td>@festival.EndDate</td>
+									<td>@festival.TicketPrice</td>
+									<td>
+										@(
+											festival.FestivalBands?.Any() != null
+											? string.Join(" | ", festival.FestivalBands.OrderBy(b => b.Day).ThenBy(b => b.Order).Select(b => b.Band.Name))
+											: "(none)"
+										)
+									</td>
+									<td>
+										<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteFestivalAction(festival))">Remove</Button>
+										<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditFestivalAction(festival))">Edit</Button>
+										<Button Color="Color.Warning" Clicked="@(() => ModifyBandsOrderAction(festival))">Modify bands order</Button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</Table>
+				</CardBody>
+			</Card>
 
-			<ModalHeader><h1>Edit</h1></ModalHeader>
+				<Modal @bind-Visible="triggerEditPopup" Background="Background.Light" >
 
-			<ModalBody Centered>
-			<Container TextColor="TextColor.Primary">
-				<Div Class="d-flex flex-row gap-3">
+					<ModalHeader><h1>Edit</h1></ModalHeader>
 
-					<Field>
-						<Label Class="fs-5 text-dark">Festival name:</Label>
-						<TextEdit @bind-Text="festivalToBeEdited.Name" Placeholder="Festival name" />
-					</Field>
+					<ModalBody Centered>
+					<Container TextColor="TextColor.Primary">
+						<Div Class="d-flex flex-row gap-3">
 
-					<Field>
-						<Label Class="fs-5 text-dark">Festival description:</Label>
-						<TextEdit @bind-Text="festivalToBeEdited.Description" Placeholder="Festival description" />
-					</Field>
-				</Div>
+							<Field>
+								<Label Class="fs-5 text-dark">Festival name:</Label>
+								<TextEdit @bind-Text="festivalToBeEdited.Name" Placeholder="Festival name" />
+							</Field>
 
-				<Div Class="d-flex flex-row gap-3">
+							<Field>
+								<Label Class="fs-5 text-dark">Festival description:</Label>
+								<TextEdit @bind-Text="festivalToBeEdited.Description" Placeholder="Festival description" />
+							</Field>
+						</Div>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Festival location:</Label>
-					<TextEdit @bind-Text="festivalToBeEdited.Location" Placeholder="Festival location" />
-				</Field>
+						<Div Class="d-flex flex-row gap-3">
 
-				<Field>
-					<Label Class="fs-5 text-dark">Start date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.StartDate" Inline />
-				</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival location:</Label>
+							<TextEdit @bind-Text="festivalToBeEdited.Location" Placeholder="Festival location" />
+						</Field>
 
-					<Field>
-						<Label Class="fs-5 text-dark">End date:</Label>
-						<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.EndDate" Inline />
-					</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Start date:</Label>
+							<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.StartDate" Inline />
+						</Field>
 
-				</Div>
+							<Field>
+								<Label Class="fs-5 text-dark">End date:</Label>
+								<DatePicker TValue="DateTime" @bind-Date="festivalToBeEdited.EndDate" Inline />
+							</Field>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Ticket price:</Label>
-					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
-				</Field>
+						</Div>
 
-				<Field>
-					<Label Class="fs-5 text-dark">Bands playing:</Label>
-					<Autocomplete TItem="ShowTime.Entities.Band"
-					TValue="Guid"
-					Data="@availableBands"
-					TextField="@(b => b.Name)"
-					ValueField="@(b => b.Id)"
-					Placeholder="Search..."
-					SelectionMode="AutocompleteSelectionMode.Multiple"
-					FreeTyping
-					MinLength="0"
-					OpenOnFocus="true"
-					CloseOnSelection="false"
-					@bind-SelectedValues="festivalToBeEditedSelectedBandIds"
-					@bind-SelectedTexts="festivalToBeEditedSelectedBandNames">
-					</Autocomplete>
-				</Field>
-			</Container>
-			</ModalBody>
+						<Field>
+							<Label Class="fs-5 text-dark">Ticket price:</Label>
+							<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="ticketPrice" />
+						</Field>
 
-			<ModalFooter>
-			<Div Class="d-flex flex-row gap-2">
-				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
-				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
-			</Div>
-			</ModalFooter>
-		</Modal>
+						<Field>
+							<Label Class="fs-5 text-dark">Bands playing:</Label>
+							<Autocomplete TItem="ShowTime.Entities.Band"
+							TValue="Guid"
+							Data="@availableBands"
+							TextField="@(b => b.Name)"
+							ValueField="@(b => b.Id)"
+							Placeholder="Search..."
+							SelectionMode="AutocompleteSelectionMode.Multiple"
+							FreeTyping
+							MinLength="0"
+							OpenOnFocus="true"
+							CloseOnSelection="false"
+							@bind-SelectedValues="festivalToBeEditedSelectedBandIds"
+							@bind-SelectedTexts="festivalToBeEditedSelectedBandNames">
+							</Autocomplete>
+						</Field>
+					</Container>
+					</ModalBody>
+
+					<ModalFooter>
+					<Div Class="d-flex flex-row gap-2">
+						<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(festivalToBeEdited))">Save</Button>
+						<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
+					</Div>
+					</ModalFooter>
+				</Modal>
 
 	
 
-	@if (triggerModifyOrderPopup)
-	{
-		<Modal @bind-Visible="triggerModifyOrderPopup" Background="Background.Light" >
-			<ModalHeader>
-			<h1>Modify band order for @festivalToBeEdited.Name</h1>
-			</ModalHeader>
-			<ModalBody>
-		<DropContainer TItem="DropBand"
-					   Items="@dropBands"
-					   ItemsFilter="@( (item, zone) => (item.Day ?? 1) == int.Parse(zone) )"
-					   ItemDropped="OnItemDropped"
-					   Flex="Flex.Wrap.Grow.Is1">
+			@if (triggerModifyOrderPopup)
+			{
+				<Modal @bind-Visible="triggerModifyOrderPopup" Background="Background.Light" >
+					<ModalHeader>
+					<h1>Modify band order for @festivalToBeEdited.Name</h1>
+					</ModalHeader>
+					<ModalBody>
+				<DropContainer TItem="DropBand"
+							   Items="@dropBands"
+							   ItemsFilter="@( (item, zone) => (item.Day ?? 1) == int.Parse(zone) )"
+							   ItemDropped="OnItemDropped"
+							   Flex="Flex.Wrap.Grow.Is1">
 
-				<ChildContent>
-					@for (int d = 0; d <= festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day + 1; d++)
-					{
-						var zone = d.ToString();
+						<ChildContent>
+							@for (int d = 0; d <= festivalToBeEdited.EndDate.Day - festivalToBeEdited.StartDate.Day + 1; d++)
+							{
+								var zone = d.ToString();
 
-						<DropZone TItem="DropBand"
-								  Name="@zone"
-								  AllowReorder
-								  Reordered="OnReorder"
-								  Padding="Padding.Is3"
-								  Margin="Margin.Is3"
-								  Flex="Flex.Grow.Is1">
+								<DropZone TItem="DropBand"
+										  Name="@zone"
+										  AllowReorder
+										  Reordered="OnReorder"
+										  Padding="Padding.Is3"
+										  Margin="Margin.Is3"
+										  Flex="Flex.Grow.Is1">
 
-							<Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom">
-								@if(zone != "0")
-								{
-									<span>Ziua @zone</span>
-								}
-							</Heading>
-						</DropZone>
-					}
-				</ChildContent>
+									<Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom">
+										@if(zone != "0")
+										{
+											<span>Ziua @zone</span>
+										}
+									</Heading>
+								</DropZone>
+							}
+						</ChildContent>
 
-				<ItemTemplate>
-					<Card Shadow="Shadow.Default" Margin="Margin.Is3.OnY">
-						<CardBody>
-							@context.Band.Name
-						</CardBody>
-					</Card>
-				</ItemTemplate>
-			</DropContainer>
-			</ModalBody>
+						<ItemTemplate>
+							<Card Shadow="Shadow.Default" Margin="Margin.Is3.OnY">
+								<CardBody>
+									@context.Band.Name
+								</CardBody>
+							</Card>
+						</ItemTemplate>
+					</DropContainer>
+					</ModalBody>
 
-			<ModalFooter>
-			<Div Class="d-flex flex-row gap-2">
-				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveBandOrder(festivalToBeEdited, dropBands))">Save</Button>
-				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerModifyOrderPopup = false; })">Close</Button>
-			</Div>
-			</ModalFooter>
-		</Modal>
-	}
+					<ModalFooter>
+					<Div Class="d-flex flex-row gap-2">
+						<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveBandOrder(festivalToBeEdited, dropBands))">Save</Button>
+						<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerModifyOrderPopup = false; })">Close</Button>
+					</Div>
+					</ModalFooter>
+				</Modal>
+			}
 
-</Div>
+		</Div>
 
-<footer>
-	<br />
-	<br />
-</footer>
+		<footer>
+			<br />
+			<br />
+		</footer>
+	</Authorized>
+
+	<NotAuthorized>
+		<h1>Access denied.</h1>
+	</NotAuthorized>
+
+</AuthorizeView>
 
 @code {
 	[Inject]

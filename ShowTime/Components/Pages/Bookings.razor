@@ -3,15 +3,25 @@
 @rendermode InteractiveServer
 @inject IRepositoryBooking RepositoryBooking
 
-<h1>Bookings</h1>
+<AuthorizeView Roles="Admin">
 
-<DataGrid TItem="ShowTime.Entities.Booking" Data="@bookings" Responsive Editable Filterable>
-	<DataGridColumns>
-		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Email)" Caption="Email" />
-		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Date)" Caption="Date" />
-		<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Price)" Caption="Price" />
-	</DataGridColumns>
-</DataGrid>
+	<Authorized>
+		<h1>Bookings</h1>
+
+		<DataGrid TItem="ShowTime.Entities.Booking" Data="@bookings" Responsive Editable Filterable>
+			<DataGridColumns>
+				<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Email)" Caption="Email" />
+				<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Date)" Caption="Date" />
+				<DataGridColumn TItem="ShowTime.Entities.Booking" Field="@nameof(ShowTime.Entities.Booking.Price)" Caption="Price" />
+			</DataGridColumns>
+		</DataGrid>
+	</Authorized>
+
+	<NotAuthorized>
+		<h1>Access denied.</h1>
+	</NotAuthorized>
+
+</AuthorizeView>
 
 
 @code {

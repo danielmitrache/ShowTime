@@ -5,136 +5,145 @@
 
 <PageTitle>Modify Bands</PageTitle>
 
-<Div Class="d-flex flex-column gap-3">
-	<Card>
-		<CardHeader>
-			<h2>Add a new booking</h2>
-		</CardHeader>
-		<CardBody>
-			<Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Booking email:</Label>
-					<TextEdit @bind-Text="bookingToBeAdded.Email" Placeholder="Booking email" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="bookingToBeAdded.Date" Inline />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Booking price:</Label>
-					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeAdded" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Festival booked:</Label>
-					<Autocomplete TItem="Festival"
-								  TValue="Guid"
-								  Data="@availableFestivals"
-								  TextField="@(( item ) => item.Name.ToString())"
-								  ValueField="@(( item ) => item.Id)"
-								  @bind-SelectedValue="@bookingToBeAdded.FestivalId"
-								  Placeholder="Search..."
-								  Filter="AutocompleteFilter.Contains"
-								  MinLength="0"
-								  OpenOnFocus="true"
-								  FreeTyping>
-					</Autocomplete>
-				</Field>
+<AuthorizeView Roles="Admin">
 
-				<Button Color="Color.Success" Clicked="AddBooking">Add Booking</Button>
-			</Container>
-		</CardBody>
-	</Card>
+	<Authorized>
+		<Div Class="d-flex flex-column gap-3">
+			<Card>
+				<CardHeader>
+					<h2>Add a new booking</h2>
+				</CardHeader>
+				<CardBody>
+					<Container TextColor="TextColor.Primary">
+						<Field>
+							<Label Class="fs-5 text-dark">Booking email:</Label>
+							<TextEdit @bind-Text="bookingToBeAdded.Email" Placeholder="Booking email" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Date:</Label>
+							<DatePicker TValue="DateTime" @bind-Date="bookingToBeAdded.Date" Inline />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Booking price:</Label>
+							<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeAdded" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival booked:</Label>
+							<Autocomplete TItem="Festival"
+										  TValue="Guid"
+										  Data="@availableFestivals"
+										  TextField="@(( item ) => item.Name.ToString())"
+										  ValueField="@(( item ) => item.Id)"
+										  @bind-SelectedValue="@bookingToBeAdded.FestivalId"
+										  Placeholder="Search..."
+										  Filter="AutocompleteFilter.Contains"
+										  MinLength="0"
+										  OpenOnFocus="true"
+										  FreeTyping>
+							</Autocomplete>
+						</Field>
 
-	<Card>
-		<CardHeader>
-			<h2>List of bookings</h2>
-		</CardHeader>
-		<CardBody>
+						<Button Color="Color.Success" Clicked="AddBooking">Add Booking</Button>
+					</Container>
+				</CardBody>
+			</Card>
 
-			<Table>
-				<thead>
-					<tr>
-						<th>Email</th>
-						<th>Date</th>
-						<th>Price</th>
-						<th>Festival</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (Booking booking in bookings)
-					{
-						<tr>
-							<td>@booking.Email</td>
-							<td>@booking.Date.ToShortDateString()</td>
-							<td>@booking.Price</td>
-							<td>
-								@availableFestivals.FirstOrDefault(f => f.Id == booking.FestivalId)?.Name
-							</td>
-							<td>
-								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBookingAction(booking))">Remove</Button>
-								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBookingAction(booking))">Edit</Button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</Table>
+			<Card>
+				<CardHeader>
+					<h2>List of bookings</h2>
+				</CardHeader>
+				<CardBody>
 
-		</CardBody>
-	</Card>
+					<Table>
+						<thead>
+							<tr>
+								<th>Email</th>
+								<th>Date</th>
+								<th>Price</th>
+								<th>Festival</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (Booking booking in bookings)
+							{
+								<tr>
+									<td>@booking.Email</td>
+									<td>@booking.Date.ToShortDateString()</td>
+									<td>@booking.Price</td>
+									<td>
+										@availableFestivals.FirstOrDefault(f => f.Id == booking.FestivalId)?.Name
+									</td>
+									<td>
+										<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBookingAction(booking))">Remove</Button>
+										<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBookingAction(booking))">Edit</Button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</Table>
 
-	@if (triggerEditPopup)
-	{
-		<Div Class="popover popover-body" style="position: fixed;
-														top: 5vh;
-														left: 50%;
-														transform: translateX(-50%);
-														z-index: 1000;">
-			<h3>Edit booking</h3>
+				</CardBody>
+			</Card>
 
-			<Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Booking email:</Label>
-					<TextEdit @bind-Text="bookingToBeEdited.Email" Placeholder="Booking email" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Date:</Label>
-					<DatePicker TValue="DateTime" @bind-Date="bookingToBeEdited.Date" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Booking price:</Label>
-					<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeEdited" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Festival booked:</Label>
-					<Autocomplete TItem="Festival"
-								  TValue="Guid"
-								  Data="@availableFestivals"
-								  TextField="@(( item ) => item.Name.ToString())"
-								  ValueField="@(( item ) => item.Id)"
-								  @bind-SelectedValue="@bookingToBeEdited.FestivalId"
-								  Placeholder="Search..."
-								  Filter="AutocompleteFilter.Contains"
-								  MinLength="0"
-								  OpenOnFocus="true"
-								  FreeTyping>
-					</Autocomplete>
-				</Field>
-			</Container>
+			@if (triggerEditPopup)
+			{
+				<Div Class="popover popover-body" style="position: fixed;
+																top: 5vh;
+																left: 50%;
+																transform: translateX(-50%);
+																z-index: 1000;">
+					<h3>Edit booking</h3>
 
-			<Div Class="d-flex flex-row gap-2">
-				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(bookingToBeEdited))">Save</Button>
-				<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
-			</Div>
+					<Container TextColor="TextColor.Primary">
+						<Field>
+							<Label Class="fs-5 text-dark">Booking email:</Label>
+							<TextEdit @bind-Text="bookingToBeEdited.Email" Placeholder="Booking email" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Date:</Label>
+							<DatePicker TValue="DateTime" @bind-Date="bookingToBeEdited.Date" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Booking price:</Label>
+							<NumericPicker TValue="decimal" CurrencySymbol="€" @bind-Value="priceForBookingToBeEdited" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Festival booked:</Label>
+							<Autocomplete TItem="Festival"
+										  TValue="Guid"
+										  Data="@availableFestivals"
+										  TextField="@(( item ) => item.Name.ToString())"
+										  ValueField="@(( item ) => item.Id)"
+										  @bind-SelectedValue="@bookingToBeEdited.FestivalId"
+										  Placeholder="Search..."
+										  Filter="AutocompleteFilter.Contains"
+										  MinLength="0"
+										  OpenOnFocus="true"
+										  FreeTyping>
+							</Autocomplete>
+						</Field>
+					</Container>
+
+					<Div Class="d-flex flex-row gap-2">
+						<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(bookingToBeEdited))">Save</Button>
+						<Button Color="Color.Danger" Text="Close" Clicked="@(() => { triggerEditPopup = false; })">Close</Button>
+					</Div>
+				</Div>
+			}
+
 		</Div>
-	}
 
-</Div>
+		<footer>
+			<br />
+			<br />
+		</footer>
+	</Authorized>
+	<NotAuthorized>
+		<h1>Access denied.</h1>
+	</NotAuthorized>
 
-<footer>
-	<br />
-	<br />
-</footer>
+</AuthorizeView>
 
 @code {
 	private List<Booking> bookings = new List<Booking>();

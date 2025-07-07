@@ -28,7 +28,8 @@
                             <p class="f-roboto fs-4 m-0 p-0 festival-name-class">
                                 @(
                                    festival.festival.FestivalBands != null && festival.festival.FestivalBands.Any()
-                                   ? string.Join(" · ", festival.festival.FestivalBands.Select(fb => fb.Band.Name))
+                                   ? string.Join(" · ", festival.festival.FestivalBands.OrderBy(fb => fb.Day)
+                                   .ThenBy(fb => fb.Order).Select(fb => fb.Band.Name))
                                    : "To be announced!"
                                   )</p>
                         </Div>

@@ -4,116 +4,123 @@
 
 <PageTitle>Modify Bands</PageTitle>
 
-<Div Class="d-flex flex-column gap-3">
-	<Card>
-		<CardHeader>
-			<h2>Add a new band</h2>
-		</CardHeader>
-		<CardBody>
+<AuthorizeView Roles="Admin">
+	<Authorized>
+		<Div Class="d-flex flex-column gap-3">
+			<Card>
+				<CardHeader>
+					<h2>Add a new band</h2>
+				</CardHeader>
+				<CardBody>
 
-			<Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Band name:</Label>
-					<TextEdit @bind-Text="addedBand.Name" Placeholder="Band name" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Genre:</Label>
-					<Autocomplete TItem="Genre"
-								  TValue="Genre"
-								  Data="@genres"
-								  TextField="@(( item ) => item.ToString())"
-								  ValueField="@(( item ) => item)"
-								  @bind-SelectedValue="@addedBand.Genre"
-								  Placeholder="Search..."
-								  Filter="AutocompleteFilter.Contains"
-								  MinLength="0"
-								  OpenOnFocus="true"
-								  FreeTyping>
-					</Autocomplete>
-				</Field>
+					<Container TextColor="TextColor.Primary">
+						<Field>
+							<Label Class="fs-5 text-dark">Band name:</Label>
+							<TextEdit @bind-Text="addedBand.Name" Placeholder="Band name" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Genre:</Label>
+							<Autocomplete TItem="Genre"
+										  TValue="Genre"
+										  Data="@genres"
+										  TextField="@(( item ) => item.ToString())"
+										  ValueField="@(( item ) => item)"
+										  @bind-SelectedValue="@addedBand.Genre"
+										  Placeholder="Search..."
+										  Filter="AutocompleteFilter.Contains"
+										  MinLength="0"
+										  OpenOnFocus="true"
+										  FreeTyping>
+							</Autocomplete>
+						</Field>
 
-				<Button Color="Color.Success" Clicked="Submit">Add Band</Button>
-			</Container>
+						<Button Color="Color.Success" Clicked="Submit">Add Band</Button>
+					</Container>
 
-		</CardBody>
-	</Card>
+				</CardBody>
+			</Card>
 
-	<Card>
-		<CardHeader>
-			<h2>List of bands</h2>
-		</CardHeader>
-		<CardBody>
+			<Card>
+				<CardHeader>
+					<h2>List of bands</h2>
+				</CardHeader>
+				<CardBody>
 
-			<Table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Genre</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (Band band in bands)
-					{
-						<tr>
-							<td>@band.Name</td>
-							<td>@band.Genre</td>
-							<td>
-								<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBandAction(band))">Remove</Button>
-								<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBandAction(band))">Edit</Button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</Table>
+					<Table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Genre</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (Band band in bands)
+							{
+								<tr>
+									<td>@band.Name</td>
+									<td>@band.Genre</td>
+									<td>
+										<Button Color="Color.Danger" Text="Delete" Clicked="@(() => DeleteBandAction(band))">Remove</Button>
+										<Button Color="Color.Warning" Text="Edit" Clicked="@(() => EditBandAction(band))">Edit</Button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</Table>
 
-		</CardBody>
-	</Card>
+				</CardBody>
+			</Card>
 
-	@if(triggerEditPopup)
-	{
-		<Div Class="popover popover-body" style="position: fixed;
-													top: 20vh;
-													left: 50%;
-													transform: translateX(-50%);
-													z-index: 1000;">
-			<h3>Edit band</h3>
-			<Container TextColor="TextColor.Primary">
-				<Field>
-					<Label Class="fs-5 text-dark">Band name:</Label>
-					<TextEdit @bind-Text="BandEdit.Name" Placeholder="Band name" />
-				</Field>
-				<Field>
-					<Label Class="fs-5 text-dark">Genre:</Label>
-					<Autocomplete TItem="Genre"
-								  TValue="Genre"
-								  Data="@genres"
-								  TextField="@(( item ) => item.ToString())"
-								  ValueField="@(( item ) => item)"
-								  @bind-SelectedValue="@BandEdit.Genre"
-								  Placeholder="Search..."
-								  Filter="AutocompleteFilter.Contains"
-								  MinLength="0"
-								  OpenOnFocus="true"
-								  FreeTyping>
-					</Autocomplete>
-				</Field>
-			</Container>
+			@if(triggerEditPopup)
+			{
+				<Div Class="popover popover-body" style="position: fixed;
+															top: 20vh;
+															left: 50%;
+															transform: translateX(-50%);
+															z-index: 1000;">
+					<h3>Edit band</h3>
+					<Container TextColor="TextColor.Primary">
+						<Field>
+							<Label Class="fs-5 text-dark">Band name:</Label>
+							<TextEdit @bind-Text="BandEdit.Name" Placeholder="Band name" />
+						</Field>
+						<Field>
+							<Label Class="fs-5 text-dark">Genre:</Label>
+							<Autocomplete TItem="Genre"
+										  TValue="Genre"
+										  Data="@genres"
+										  TextField="@(( item ) => item.ToString())"
+										  ValueField="@(( item ) => item)"
+										  @bind-SelectedValue="@BandEdit.Genre"
+										  Placeholder="Search..."
+										  Filter="AutocompleteFilter.Contains"
+										  MinLength="0"
+										  OpenOnFocus="true"
+										  FreeTyping>
+							</Autocomplete>
+						</Field>
+					</Container>
 
-			<Div Class="d-flex flex-row gap-2">
-				<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(BandEdit))">Save</Button>
-				<Button Color="Color.Danger" Text="Close" Clicked="@(() => {triggerEditPopup = false;})">Close</Button>
-			</Div>
+					<Div Class="d-flex flex-row gap-2">
+						<Button Color="Color.Success" Text="Save" Clicked="@(() => SaveEdit(BandEdit))">Save</Button>
+						<Button Color="Color.Danger" Text="Close" Clicked="@(() => {triggerEditPopup = false;})">Close</Button>
+					</Div>
+				</Div>
+			}
+
 		</Div>
-	}
 
-</Div>
+		<footer>
+			<br />
+			<br />
+		</footer>
+	</Authorized>
 
-<footer>
-	<br />
-	<br />
-</footer>
-
+	<NotAuthorized>
+		<h1>Access denied.</h1>
+	</NotAuthorized>
+</AuthorizeView>
 @code {
 	public IEnumerable<Genre> genres => Enum.GetValues(typeof(Genre)).Cast<Genre>();
 	private List<ShowTime.Entities.Band> bands = new List<Band> ();

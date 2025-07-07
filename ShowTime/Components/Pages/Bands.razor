@@ -1,17 +1,25 @@
 ﻿@page "/bands"
 @using ShowTime.Repositories.Interfaces
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Bands</PageTitle>
 
-<h1>Bands Page</h1>
 
-<DataGrid TItem="ShowTime.Entities.Band" Data="@bands" Responsive Editable Filterable>
-    <DataGridColumns>
-        <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Name)" Caption="Name" />
-        <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Genre)" Caption="Genre" />
-    </DataGridColumns>
-</DataGrid>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+    <h1>Bands Page</h1>
+    <DataGrid TItem="ShowTime.Entities.Band" Data="@bands" Responsive Editable Filterable>
+        <DataGridColumns>
+            <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Name)" Caption="Name" />
+            <DataGridColumn TItem="ShowTime.Entities.Band" Field="@nameof(ShowTime.Entities.Band.Genre)" Caption="Genre" />
+        </DataGridColumns>
+    </DataGrid>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied.</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
 
 
