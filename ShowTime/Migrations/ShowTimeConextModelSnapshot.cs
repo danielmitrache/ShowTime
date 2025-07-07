@@ -10,7 +10,7 @@ using ShowTime.Context;
 
 namespace ShowTime.Migrations
 {
-    [DbContext(typeof(ShowTimeConext))]
+    [DbContext(typeof(ShowTimeContext))]
     partial class ShowTimeConextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

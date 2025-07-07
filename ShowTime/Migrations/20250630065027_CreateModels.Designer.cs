@@ -11,7 +11,7 @@ using ShowTime.Context;
 
 namespace ShowTime.Migrations
 {
-    [DbContext(typeof(ShowTimeConext))]
+    [DbContext(typeof(ShowTimeContext))]
     [Migration("20250630065027_CreateModels")]
     partial class CreateModels
     {

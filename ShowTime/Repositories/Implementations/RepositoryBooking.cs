@@ -5,7 +5,7 @@ namespace ShowTime.Repositories.Implementations
 {
     public class RepositoryBooking : RepositoryBase<ShowTime.Entities.Booking>, IRepositoryBooking
     {
-        public RepositoryBooking(ShowTimeConext context) : base(context)
+        public RepositoryBooking(ShowTimeContext context) : base(context)
         {
         }
     }

@@ -7,7 +7,7 @@ namespace ShowTime.Repositories.Implementations
 {
     public class RepositoryFestival : RepositoryBase<ShowTime.Entities.Festival>, IRepositoryFestival
     {
-        public RepositoryFestival(ShowTimeConext context) : base(context)
+        public RepositoryFestival(ShowTimeContext context) : base(context)
         {
         }
 

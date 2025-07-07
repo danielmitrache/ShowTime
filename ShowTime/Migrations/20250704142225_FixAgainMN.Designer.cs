@@ -11,7 +11,7 @@ using ShowTime.Context;
 
 namespace ShowTime.Migrations
 {
-    [DbContext(typeof(ShowTimeConext))]
+    [DbContext(typeof(ShowTimeContext))]
     [Migration("20250704142225_FixAgainMN")]
     partial class FixAgainMN
     {
